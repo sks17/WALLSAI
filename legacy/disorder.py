@@ -1,8 +1,18 @@
 import os
-import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
+
+# Optional heavy dependencies (training/legacy only)
+try:
+    import pandas as pd
+    from sklearn.tree import DecisionTreeClassifier
+    from sklearn.metrics import accuracy_score
+    from sklearn.model_selection import train_test_split
+    _LEGACY_DEPS_AVAILABLE = True
+except ImportError:
+    pd = None
+    DecisionTreeClassifier = None
+    accuracy_score = None
+    train_test_split = None
+    _LEGACY_DEPS_AVAILABLE = False
 
 
 class Disorder():
@@ -39,6 +49,11 @@ class Disorder():
         Return:
         None 
         """
+        if not _LEGACY_DEPS_AVAILABLE:
+            raise ImportError(
+                "Legacy diagnosis requires pandas and scikit-learn. "
+                "Install requirements-dev.txt to enable this route."
+            )
 
         # Initialize an empty DataFrame
         symptoms = pd.DataFrame(columns=features.columns)
@@ -69,6 +84,11 @@ class Disorder():
         Return:
         None
         """
+        if not _LEGACY_DEPS_AVAILABLE:
+            raise ImportError(
+                "Legacy training requires pandas and scikit-learn. "
+                "Install requirements-dev.txt to enable this route."
+            )
 
         features_train, features_test, labels_train, labels_test = \
         train_test_split(features, labels, test_size=0.25)
@@ -93,6 +113,11 @@ class Disorder():
         Return:
         The trained model
         """
+        if not _LEGACY_DEPS_AVAILABLE:
+            raise ImportError(
+                "Legacy training requires pandas and scikit-learn. "
+                "Install requirements-dev.txt to enable this route."
+            )
         
         features = df.loc[:, df.columns != 'Disorder']
         # one hot encoding
@@ -113,6 +138,12 @@ class Disorder():
     def getDisorder(self, symptoms):
         print(symptoms)
         #print(os.getcwd()) #/TSA-Software-Development
+        if not _LEGACY_DEPS_AVAILABLE:
+            raise ImportError(
+                "Legacy diagnosis requires pandas and scikit-learn. "
+                "Install requirements-dev.txt to enable this route."
+            )
+
         df = pd.read_csv('Static/Data/dataset.csv')
         model = self.train_model(df)
 

@@ -13,7 +13,6 @@ if ROOT not in sys.path:
 from dataclasses import dataclass
 from typing import Iterable, List, Tuple
 
-import pandas as pd
 import torch
 from torch import Tensor
 
@@ -62,6 +61,15 @@ class Preprocessor:
 
         Returns feature tensor, label tensor, and label-to-index mapping.
         """
+        # Import pandas lazily so inference-only environments don't need it
+        try:
+            import pandas as pd  # type: ignore
+        except ImportError as exc:  # pragma: no cover - only hit in prod without pandas
+            raise ImportError(
+                "pandas is required for training/preprocessing batches. "
+                "Install requirements-dev.txt when running training jobs."
+            ) from exc
+
         missing = [f for f in self.feature_names if f not in df.columns]
         if missing:
             raise ValueError(f"Missing expected features: {missing}")

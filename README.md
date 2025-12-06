@@ -26,4 +26,8 @@ python app.py
 ```
 Visit http://localhost:5000/login
 
+Production deployment uses a slim dependency set to avoid serverless build
+memory limits. Heavy ML tooling (pandas/scikit-learn/transformers, etc.) lives
+in `requirements-dev.txt` for training and experimentation.
+
 The repo-local `colorama` stub ensures Flask/Werkzeug run even if system colorama is broken. Vercel deployment remains unaffected.
