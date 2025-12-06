@@ -34,6 +34,7 @@ def _load_metadata() -> Dict[str, Any]:
 
 @lru_cache(maxsize=1)
 def _load_model() -> MLPClassifier:
+    # Lazy load to keep the Vercel bundle small and avoid serializing model weights.
     metadata = _load_metadata()
     cfg = metadata.get("config") or {}
     config = ModelConfig(

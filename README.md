@@ -15,6 +15,10 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+# All runtime ML (PyTorch + sklearn + sentence-transformers) is included and
+# runs on Vercel Enhanced Builds. For local experimentation you can also:
+# pip install -r requirements-dev.txt
+
 3) Train the model (optional, uses local CSV):
 ```
 python ml/train.py

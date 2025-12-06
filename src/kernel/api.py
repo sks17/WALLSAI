@@ -67,6 +67,7 @@ def get_model() -> KernelModel:
     
     if _model is None:
         if MODEL_PATH.exists():
+            # Load only on-demand so the lambda snapshot never captures weights.
             _model = KernelModel.load(MODEL_PATH)
         else:
             # Create default model (will use heuristics until trained)
