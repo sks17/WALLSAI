@@ -1,0 +1,4 @@
+# This directory contains raw, unprocessed CSV files.
+# Do not modify files in this directory directly.
+# Files here are inputs to the cleaning pipeline.
+

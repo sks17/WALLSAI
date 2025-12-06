@@ -1,0 +1,678 @@
+{% extends "base.html" %}
+{% block title %}Notes & Reflections | WALLS{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/kernel.css') }}">
+{% endblock %}
+
+{% block header_actions %}
+<a class="btn btn-ghost" href="{{ url_for('frontend.mindfulness') }}">Resources</a>
+<a class="btn btn-ghost" href="{{ url_for('frontend.dashboard') }}">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<section class="hero fade-in">
+    <h1 data-animate="chars">Notes & Reflections</h1>
+    <p class="fade-body">A private space to track your thoughts, feelings, and progress.</p>
+</section>
+
+{# Disclaimer Banner #}
+<div class="notes-disclaimer" style="max-width: 900px; margin: 0 auto 24px; padding: 0 20px;">
+  <div class="disclaimer-banner">
+    <p>
+      <span class="disclaimer-icon">ℹ️</span>
+      <strong>Personal journaling:</strong> Your notes are stored locally to help you reflect on patterns over time. 
+      This is not a clinical record and does not replace professional support or documentation.
+    </p>
+  </div>
+</div>
+
+<div class="notes-container">
+    <!-- New Note Form -->
+    <section class="notes-composer">
+        <div class="soft-card">
+            <div class="composer-header">
+                <h2>New Entry</h2>
+                <div class="mood-selector" id="mood-selector">
+                    <span class="mood-label">How are you feeling?</span>
+                    <div class="mood-options">
+                        <button class="mood-btn" data-mood="1" title="Very Low">😢</button>
+                        <button class="mood-btn" data-mood="3" title="Low">😔</button>
+                        <button class="mood-btn" data-mood="5" title="Neutral">😐</button>
+                        <button class="mood-btn" data-mood="7" title="Good">🙂</button>
+                        <button class="mood-btn" data-mood="9" title="Great">😊</button>
+                        <button class="mood-btn" data-mood="10" title="Excellent">🌟</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="composer-body">
+                <input type="text" 
+                       id="note-title" 
+                       class="note-title-input" 
+                       placeholder="Title (optional)">
+                
+                <textarea id="note-content" 
+                          class="note-content-input" 
+                          placeholder="What's on your mind? Write freely about your thoughts, feelings, or experiences..."
+                          rows="6"></textarea>
+                
+                <div class="composer-footer">
+                    <div class="tag-selector" id="tag-selector">
+                        <span class="tag-label">Tags:</span>
+                        <div class="tag-options" id="tag-options">
+                            <!-- Tags loaded dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="composer-actions">
+                        <span class="char-counter"><span id="char-count">0</span> / 5000</span>
+                        <button class="btn btn-primary" id="save-note-btn">
+                            <span class="btn-icon">✓</span> Save Entry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Notes List -->
+    <section class="notes-list-section">
+        <div class="notes-list-header">
+            <h2>Your Entries</h2>
+            <div class="notes-actions">
+                <input type="text" 
+                       id="search-notes" 
+                       class="search-input" 
+                       placeholder="Search notes...">
+                <div class="dropdown">
+                    <button class="btn btn-ghost dropdown-toggle" id="export-btn">
+                        Export
+                    </button>
+                    <div class="dropdown-menu" id="export-menu">
+                        <button class="dropdown-item" data-format="json">JSON</button>
+                        <button class="dropdown-item" data-format="markdown">Markdown</button>
+                        <button class="dropdown-item" data-format="text">Plain Text</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notes-filter">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="pinned">📌 Pinned</button>
+            <!-- Dynamic tag filters added here -->
+        </div>
+        
+        <div class="notes-list" id="notes-list">
+            <div class="notes-loading">
+                <div class="loading-spinner"></div>
+                <p>Loading your notes...</p>
+            </div>
+        </div>
+        
+        <div class="notes-empty" id="notes-empty" hidden>
+            <div class="empty-icon">📝</div>
+            <h3>No notes yet</h3>
+            <p>Start writing to track your mental health journey.</p>
+        </div>
+    </section>
+</div>
+
+<!-- Note Detail Modal -->
+<div class="modal" id="note-modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modal-title">Note</h2>
+            <button class="modal-close" id="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-meta">
+                <span id="modal-date"></span>
+                <span id="modal-mood"></span>
+            </div>
+            <div class="modal-tags" id="modal-tags"></div>
+            <div class="modal-content-text" id="modal-content"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" id="modal-pin-btn">📌 Pin</button>
+            <button class="btn btn-ghost btn-danger" id="modal-delete-btn">Delete</button>
+            <button class="btn btn-primary" id="modal-edit-btn">Edit</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/notes.js') }}"></script>
+
+<style>
+/* Notes Page Styles */
+.notes-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+.notes-composer {
+    margin-bottom: 40px;
+}
+
+.composer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.composer-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text);
+}
+
+.mood-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mood-label {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.mood-options {
+    display: flex;
+    gap: 8px;
+}
+
+.mood-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    background: var(--bg-tint);
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mood-btn:hover {
+    transform: scale(1.1);
+    border-color: var(--primary);
+}
+
+.mood-btn.selected {
+    border-color: var(--primary);
+    background: rgba(139, 92, 246, 0.2);
+    transform: scale(1.15);
+}
+
+.note-title-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-bottom: 1px solid var(--bg-tint);
+    background: transparent;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.note-title-input:focus {
+    border-color: var(--primary);
+}
+
+.note-content-input {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    background: var(--bg-tint);
+    border-radius: 12px;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text);
+    resize: vertical;
+    min-height: 150px;
+    margin: 16px 0;
+    outline: none;
+    transition: box-shadow 0.3s;
+}
+
+.note-content-input:focus {
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+.composer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.tag-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tag-label {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.tag-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--bg-tint);
+    border-radius: 20px;
+    background: transparent;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tag-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.tag-btn.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.composer-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.char-counter {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* Notes List */
+.notes-list-section {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.notes-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.notes-list-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.notes-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.search-input {
+    padding: 10px 16px;
+    border: 1px solid var(--bg-tint);
+    border-radius: 8px;
+    background: var(--bg-tint);
+    color: var(--text);
+    font-size: 14px;
+    width: 200px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    border-color: var(--primary);
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--card);
+    border: 1px solid var(--bg-tint);
+    border-radius: 8px;
+    padding: 8px;
+    min-width: 150px;
+    display: none;
+    z-index: 100;
+    box-shadow: var(--shadow-soft);
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: var(--bg-tint);
+}
+
+.notes-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--bg-tint);
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--bg-tint);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.filter-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.note-card {
+    padding: 16px 20px;
+    background: var(--bg-tint);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.note-card:hover {
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.note-card.pinned {
+    border-left: 3px solid var(--primary);
+}
+
+.note-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.note-card-title {
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+}
+
+.note-card-date {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.note-card-preview {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.note-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.note-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.note-tag {
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.note-card-mood {
+    font-size: 18px;
+}
+
+/* Empty State */
+.notes-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.notes-empty h3 {
+    margin: 0 0 8px;
+    color: var(--text);
+}
+
+/* Loading */
+.notes-loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    display: none;
+}
+
+.modal:not([hidden]) {
+    display: flex;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    position: relative;
+    background: var(--card);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--bg-tint);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.modal-close {
+    background: var(--bg-tint);
+    border: none;
+    font-size: 24px;
+    color: var(--text);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.modal-close:hover {
+    background: var(--primary);
+    color: white;
+    transform: scale(1.1);
+}
+
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.modal-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.modal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.modal-content-text {
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--bg-tint);
+}
+
+.btn-danger {
+    color: #ff6b6b;
+}
+
+.btn-danger:hover {
+    background: rgba(255, 107, 107, 0.1);
+}
+
+@media (max-width: 640px) {
+    .composer-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .notes-actions {
+        width: 100%;
+    }
+    
+    .search-input {
+        flex: 1;
+    }
+    
+    .composer-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .composer-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+</style>
+{% endblock %}
+

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-4oI2rdHfFNez8l8O5lDwC5aLDBtnEsRgG1m3d8U5b50qVD75UIt440f+lYR/RA80fPFMCTJGp+bd9SmK/E7CQA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon link -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #3d87c7; /* Blue Background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Ensure full viewport height */
+    }
+    /* Pseudo-element for background image */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("{{ url_for('static', filename='images/Calendar.png') }}"); /* Background image URL */
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px); /* Apply blur effect */
+      z-index: -1; /* Place behind other content */
+    }
+
+    /* Blue tint overlay */
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-color: rgba(69, 190, 254, 0.5); /* Semi-transparent blue color */
+      z-index: -1; /* Place behind other content */
+    }
+
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      cursor: pointer;
+      color: #3D4756; /* Deep Blue Color */
+      font-size: 24px;
+      z-index: 2; /* Ensure the button is above the taskbar */
+    }
+
+    .taskbar {
+      position: fixed;
+      top: 0;
+      left: -200px; /* Initial position outside the viewport */
+      width: 200px;
+      height: 100%;
+      background-color: #F6F4F4; /* White Background */
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+      transition: left 0.3s ease-in-out;
+      z-index: 1; /* Ensure the taskbar is behind the button */
+      overflow: hidden; /* Hide potential scrollbar */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lines {
+      display: block;
+      margin: 8px 0;
+    }
+
+    .line {
+      height: 3px;
+      width: 30px;
+      background-color: #3D4756; /* Deep Blue Color */
+      margin: 5px 0;
+    }
+
+    .return-home {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      color: #000000; /* Light Cyan Background Color */
+      font-size: 18px;
+      z-index: 2; /* Ensure the button is above the taskbar */
+    }
+
+    .login-container {
+      text-align: center;
+      max-width: 60%;
+      padding: 5%;
+      background-color: #F6F4F4; /* White Background */
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20%;
+      margin-top: 30%;
+    }
+
+    h1 {
+      color: #333333; /* Dark Text Color */
+    }
+
+    .logo {
+      width: 100%; /* Full width for responsiveness */
+      max-width: 300px; /* Adjust the max-width as needed */
+      margin-bottom: 20px; /* Increased margin to create more space */
+    }
+
+    .input-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #dddddd; /* Light Gray Outline */
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    .button {
+      background-color: #A1ACBD; /* Dark Cyan Button Color */
+      color: #F6F4F4; /* White Text Color */
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+      margin-top: 20px;
+      display: block; /* Buttons on top of each other */
+      width: 100%; /* Full width */
+    }
+
+    .button:hover {
+      background-color: #3D4756; /* Slightly Darker Cyan on Hover */
+    }
+
+    .buttonTxt{
+      text-decoration: none;
+      color: #F6F4F4; /* White Text Color */
+    }
+
+    .banner {
+      background-color: #000000; /* Black Background for the Banner */
+      color: #F6F4F4; /* White Text Color */
+      padding: 5%; /* Adjusted to be a percentage of the container width */
+      text-align: center;
+      width: 100%;
+    }
+
+    .signup-link {
+      margin-top: 10px;
+      color: #333333;
+    }
+
+    .signup-link a {
+      color: #007BFF; /* Blue Link Color */
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    .goals-container {
+      text-align: left;
+      min-width: 60%;
+      max-width: 80%;
+      height: 90%;
+      padding: 2%;
+      background-color: #F6F4F4; /* White Background */
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+    }
+  </style>
+  <title>Goals</title>
+  
+
+  <!-- Add the Google Calendar API script -->
+  <script src="https://apis.google.com/js/api.js"></script>
+
+</head>
+<body>
+
+<!-- Menu Button -->
+<div class="menu-button" onclick="toggleTaskbar()">
+    <div class="lines">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
+  </div>
+  <div class="taskbar2">
+    <div class="nav-buttons">
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        home
+      </span>
+      <button onclick="leave3()">Home</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        group
+      </span>
+      <button onclick="leave13()">Socialization</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        sentiment_neutral
+      </span>
+      <button onclick="leave4()">Survey</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        directions_run
+      </span>
+      <button onclick="leave5()">Exercise</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        calendar_month
+      </span>
+      <button onclick="leave12()">Calendar</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        menu_book
+      </span>
+      <button onclick="leave2()">Philosophies</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        local_hospital
+      </span>
+      <button onclick="leave20()">Additional aid</button>
+    </div>
+    <img class="logo" src="{{ url_for('static', filename='images/WallsLogo2.PNG') }}" alt="Walls Logo">
+  </div>
+  <style>
+      .taskbar {
+        position: fixed;
+        top: 0;
+        left: -200px; /* Initial position outside the viewport */
+        width: 200px;
+        height: 100%;
+        background-color: #F6F4F4; /* White Background */
+        box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s ease-in-out;
+        z-index: 1; /* Ensure the taskbar is behind the button */
+        overflow: hidden; /* Hide potential scrollbar */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+  
+    .taskbar2 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: #3D85C6; /* Blue Background */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+  
+      .taskbar2 .nav-buttons button {
+        background-color: transparent;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+  
+      .taskbar2 .nav-buttons span {
+        margin-left: 40px;
+      }
+  
+      .taskbar2 .nav-buttons button:hover {
+        
+        text-decoration: underline;
+      }
+  
+      .taskbar2 .nav-buttons button:last-child {
+        margin-right: 0;
+      }
+  
+      .logo {
+              width: 200px;
+              height: 50px;
+              margin-right: 20px;
+          }
+  
+      .taskbar2::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background-color: #787987; /* Gray line at the bottom */
+      }
+      headers {
+        font-size:30px;
+        color: #293553;
+      }
+  
+  </style>
+  
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <span class="material-symbols-outlined" style="font-size:50px">
+      home
+    </span>
+    <button class="button2" onclick="leave3()">Home</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      sentiment_neutral
+    </span>
+    <button class="button2" onclick="leave4()">Survey</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      directions_run
+    </span>
+    <button class="button2" onclick="leave5()">Exercise</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      calendar_month
+    </span>
+    <button class="button2" onclick="leave12()">Calendar</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      menu_book
+    </span>
+    <button class="button2" onclick="leave2()">Philosophies</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      local_hospital
+    </span>
+    <button class="button2" onclick="leave20()">Additional aid</button>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+      function leave2() {
+          window.location.href = "{{ url_for('legacy.philo') }}"
+      }
+      function leave5() {
+          window.location.href = "{{ url_for('legacy.exercise') }}"
+      }
+      function leave3() {
+          window.location.href = "{{ url_for('legacy.thome') }}"
+      }
+      function leave20() {
+          window.location.href = "{{ url_for('legacy.aid') }}"
+      }
+      function leave4() {
+          window.location.href = "{{ url_for('legacy.survey') }}"
+      }
+      function leave12() {
+          window.location.href = "{{ url_for('legacy.calendar') }}"
+      }
+      function leave13() {
+          window.location.href = "{{ url_for('legacy.social') }}"
+      }
+    </script>
+  </div>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0" />
+  
+
+
+  <div class="goals-container">
+    <h1>Welcome, Sam</h1>
+    <h2>Calendar</h2>
+    <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FLos_Angeles&bgcolor=%233F51B5&title&showPrint=0&showTz=0&showNav=0&src=YjI1NTU0OTBkYmY4MTc0MTI4NzdjYWI1YTNlYzYxODU0YjJlYjI3NWNmOGE4NTgzNzRmMzRkMWZkYzA3YjA0ZUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23D81B60" 
+      style="border:solid 7px black; border-radius: 2%" width="100%" height="400px" frameborder="0" scrolling="no"></iframe>
+    <!-- Add a form to input event details -->
+    <form id="eventForm">
+      <input type="text" id="eventName" placeholder="Event Name" required>
+      <input type="datetime-local" id="eventDateTime" required>
+      <button type="submit">Add Event</button>
+    </form>
+  </div>
+
+  <script>
+    function toggleTaskbar() {
+      const taskbar = document.querySelector('.taskbar');
+      const newLeft = taskbar.style.left === '0px' ? '-200px' : '0px';
+      taskbar.style.left = newLeft;
+    }
+  </script>
+  <script src="script.js"></script>
+
+  <script>
+    // Initialize the Google Calendar API client
+    gapi.load('client:auth2', initClient);
+  
+    // Initialize the API client
+    function initClient() {
+      gapi.client.init({
+        apiKey: 'AIzaSyAUpe_q39qIKE7ISSY-yuKMAEP6THHAKyk',
+        clientId: '640920800264-inll4seb5ib69hliflc9h9658r37ch4n.apps.googleusercontent.com',
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+        scope: 'https://www.googleapis.com/auth/calendar.events'
+      }).then(function () {
+        console.log('Google Calendar API initialized');
+      });
+    }
+  
+    // Function to add an event to Google Calendar
+    function addEvent(event) {
+      gapi.client.calendar.events.insert({
+        'calendarId': 'primary',
+        'resource': event
+      }).then(function(response) {
+        console.log('Event added: ' + response.result.htmlLink);
+      }, function(err) {
+        console.error('Error adding event: ' + err);
+      });
+    }
+  
+    // Handle form submission
+    document.getElementById('eventForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const eventName = document.getElementById('eventName').value;
+      const eventDateTime = document.getElementById('eventDateTime').value;
+      
+      // Create event object
+      const eventObject = {
+        'summary': eventName,
+        'start': {
+          'dateTime': eventDateTime,
+          'timeZone': 'Your_Time_Zone'
+        },
+        'end': {
+          'dateTime': eventDateTime,
+          'timeZone': 'Your_Time_Zone'
+        }
+      };
+  
+      // Add event to Google Calendar
+      addEvent(eventObject);
+    });
+  </script>
+
+</body>
+</html>

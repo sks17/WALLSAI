@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}{{ topic.title }} | WALLS{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/kernel.css') }}">
+{% endblock %}
+
+{% block header_actions %}
+<a class="btn btn-ghost" href="{{ url_for('frontend.mindfulness') }}">← Back to Resources</a>
+{% endblock %}
+
+{% block content %}
+<section class="hero fade-in">
+    <div class="topic-icon">{{ topic.icon }}</div>
+    <h1 data-animate="chars">{{ topic.title }}</h1>
+    <p class="fade-body">{{ topic.summary }}</p>
+</section>
+
+<div class="learn-container">
+    <article class="learn-content soft-card">
+        {{ topic.content | safe }}
+    </article>
+    
+    <aside class="learn-sidebar">
+        <div class="soft-card">
+            <h3>Related Resources</h3>
+            <ul class="related-links">
+                {% if topic.id == 'stress_science' %}
+                <li><a href="{{ url_for('frontend.mindfulness') }}#breathing">Breathing Exercises</a></li>
+                <li><a href="{{ url_for('frontend.mindfulness') }}">Mindfulness Resources</a></li>
+                {% elif topic.id == 'anxiety_science' %}
+                <li><a href="{{ url_for('frontend.mindfulness') }}#breathing">Calming Breathing</a></li>
+                <li><a href="{{ url_for('frontend.mindfulness') }}#tips">Quick Anxiety Tips</a></li>
+                {% elif topic.id == 'sleep_science' %}
+                <li><a href="{{ url_for('frontend.mindfulness') }}">Sleep Resources</a></li>
+                {% elif topic.id == 'depression_science' %}
+                <li><a href="{{ url_for('frontend.mindfulness') }}">Support Resources</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('frontend.notes') }}">Journal Your Thoughts</a></li>
+                <li><a href="{{ url_for('frontend.survey') }}">Take an Assessment</a></li>
+            </ul>
+        </div>
+        
+        <div class="soft-card">
+            <h3>Need Help?</h3>
+            <p class="sidebar-text">If you're struggling, please reach out to a professional or crisis line.</p>
+            <a href="tel:988" class="crisis-link">📞 Call 988</a>
+        </div>
+    </aside>
+</div>
+
+<div class="learn-nav">
+    <a href="{{ url_for('frontend.mindfulness') }}" class="btn btn-ghost">← All Topics</a>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<style>
+.learn-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 40px;
+}
+
+.topic-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.learn-content {
+    padding: 40px;
+}
+
+.learn-content h2 {
+    font-size: 1.4rem;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    color: var(--text);
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 8px;
+}
+
+.learn-content h3 {
+    font-size: 1.1rem;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: var(--text);
+}
+
+.learn-content p {
+    line-height: 1.8;
+    margin-bottom: 16px;
+    color: var(--muted);
+}
+
+.learn-content ul, .learn-content ol {
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+.learn-content li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.learn-content strong {
+    color: var(--text);
+}
+
+.learn-sidebar h3 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+    color: var(--text);
+}
+
+.related-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.related-links li {
+    margin-bottom: 12px;
+}
+
+.related-links a {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.related-links a:hover {
+    text-decoration: underline;
+}
+
+.sidebar-text {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 16px;
+}
+
+.crisis-link {
+    display: block;
+    padding: 12px 16px;
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.crisis-link:hover {
+    background: rgba(255, 107, 107, 0.2);
+}
+
+.learn-nav {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+@media (max-width: 900px) {
+    .learn-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .learn-sidebar {
+        order: -1;
+    }
+}
+</style>
+{% endblock %}
+

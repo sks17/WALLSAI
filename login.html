@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-4oI2rdHfFNez8l8O5lDwC5aLDBtnEsRgG1m3d8U5b50qVD75UIt440f+lYR/RA80fPFMCTJGp+bd9SmK/E7CQA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon link -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #3D85C6; /* Light Cyan Background */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden; /* Prevent scrolling when the taskbar is open */
+    }
+
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      cursor: pointer;
+      color: #3D4756; /* Deep Blue Color */
+      font-size: 24px;
+      z-index: 2; /* Ensure the button is above the taskbar */
+    }
+
+    .taskbar {
+      position: fixed;
+      top: 0;
+      left: -200px; /* Initial position outside the viewport */
+      width: 200px;
+      height: 100%;
+      background-color: #ffffff; /* White Background */
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+      transition: left 0.3s ease-in-out;
+      z-index: 1; /* Ensure the taskbar is behind the button */
+      overflow: hidden; /* Hide potential scrollbar */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lines {
+      display: block;
+      margin: 8px 0;
+    }
+
+    .line {
+      height: 3px;
+      width: 30px;
+      background-color: #3D4756; /* Deep Blue Color */
+      margin: 5px 0;
+    }
+
+    .return-home {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      color: #000000; /* Light Cyan Background Color */
+      font-size: 18px;
+      z-index: 2; /* Ensure the button is above the taskbar */
+    }
+
+    .login-container {
+      text-align: center;
+      max-width: 60%;
+      padding: 5%;
+      background-color: #ffffff; /* White Background */
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20%;
+      margin-top: 30%;
+    }
+
+    h1 {
+      color: #333333; /* Dark Text Color */
+    }
+
+    .logo {
+      width: 100%; /* Full width for responsiveness */
+      max-width: 300px; /* Adjust the max-width as needed */
+      margin-bottom: 20px; /* Increased margin to create more space */
+    }
+
+    .input-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #dddddd; /* Light Gray Outline */
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    .button {
+      background-color: #A1ACBD; /* Dark Cyan Button Color */
+      color: #ffffff; /* White Text Color */
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+      margin-top: 20px;
+      display: block; /* Buttons on top of each other */
+      width: 100%; /* Full width */
+    }
+
+    .button:hover {
+      background-color: #3D4756; /* Slightly Darker Cyan on Hover */
+    }
+
+    .banner {
+      background-color: #000000; /* Black Background for the Banner */
+      color: #ffffff; /* White Text Color */
+      padding: 5%; /* Adjusted to be a percentage of the container width */
+      text-align: center;
+      width: 100%;
+    }
+
+    .signup-link {
+      margin-top: 10px;
+      color: #333333;
+    }
+
+    .signup-link a {
+      color: #007BFF; /* Blue Link Color */
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+  <title>Log In</title>
+</head>
+<body>
+
+  <!-- Menu Button -->
+  <div class="menu-button" onclick="toggleTaskbar()">
+    <div class="lines">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
+  </div>
+
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <!-- You can add buttons or content to the taskbar here -->
+  </div>
+
+  <!-- Return to Home Button -->
+  <div class="return-home" onclick="redirectToHome()">
+    Return To Home
+  </div>
+  <script>
+    function redirectToHome() {
+        window.location.href = "{{ url_for('home') }}";
+    }
+</script>
+
+  <div class="login-container">
+    <!-- Replace "Walls" with the logo image -->
+    <img class="logo" src="{{ url_for('static', filename='images/Login.png') }}" alt="Login Logo">
+
+    <h1>Log In</h1>
+
+    <!-- Input Fields -->
+    <div class="input-container">
+      <input type="text" placeholder="Username/Email" id = "email">
+      <input type="password" placeholder="Password" id = "password">
+    </div>
+
+    <!-- Login Button -->
+    <button class="button" onclick="window.location.href='login.html'" id = "login">Login</button>
+
+    <!-- Signup Link -->
+    <div class="signup-link">
+      Don't have an account yet? <a href="signup.html">Sign up</a>
+    </div>
+  </div>
+
+  <!-- Black Banner with "Lorem Ipsum" Text -->
+  <div class="banner">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eget elit sit amet libero bibendum eleifend.</p>
+  </div>
+
+  <script>
+    function toggleTaskbar() {
+      const taskbar = document.querySelector('.taskbar');
+      const newLeft = taskbar.style.left === '0px' ? '-200px' : '0px';
+      taskbar.style.left = newLeft;
+    }
+  </script>
+  <script type = "module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword  } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFsfe725OJecjHqIWC26IT8d-0Xv6fTSY",
+      authDomain: "login-with-firebase-ada.firebaseapp.com",
+      databaseURL: "https://login-with-firebase-ada-default-rtdb.firebaseio.com",
+      projectId: "login-with-firebase-ada",
+      storageBucket: "login-with-firebase-ada.appspot.com",
+      messagingSenderId: "811171156940",
+      appId: "1:811171156940:web:b624f0d251778cdf380369"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    // Gain Inputs
+    login.addEventListener("click", function (event) {
+      event.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const login = document.getElementById('login');
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            // Signed up 
+            const user = userCredential.user;
+            window.location.href = "main.html"
+            // ...
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(email);
+            alert(errorMessage)
+            // ..
+          });
+          
+    })
+    /*God is good*/
+  </script>
+
+</body>
+</html>

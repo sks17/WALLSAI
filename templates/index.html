@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Welcome | Wellness Companion{% endblock %}
+
+{% block header_actions %}
+  <a class="btn btn-primary" href="{{ url_for('frontend.login') }}">Login</a>
+{% endblock %}
+
+{% block content %}
+<section class="hero fade-in">
+  <h1 data-animate="chars">Your calm space for mental wellness</h1>
+  <p class="fade-body">Take a moment. Breathe. Let’s begin.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="{{ url_for('frontend.login') }}">Start now</a>
+    <a class="btn btn-ghost" href="{{ url_for('frontend.survey') }}">Take a survey</a>
+  </div>
+</section>
+
+<section class="journey-section fade-delayed">
+  <div class="soft-card" style="text-align:center;">
+    <div class="card-header">
+      <h2 class="heading" data-animate="chars">Why people choose WALLS</h2>
+      <p class="muted fade-body">A gentle check-in to understand how you feel and get supportive guidance.</p>
+    </div>
+    <div class="feature-grid" style="max-width: 720px; margin: 0 auto;">
+      <div class="feature-card">
+        <h3>Clarity</h3>
+        <p>Answer a few questions to understand your current state.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Calm design</h3>
+        <p>Soft colors and spacing to keep your focus and comfort.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Ready for growth</h3>
+        <p>Future-friendly for insights, charts, and personalized guidance.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+

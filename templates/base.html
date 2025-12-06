@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Wellness App{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  
+  <!-- Firebase Configuration (Global) -->
+  <script>
+  window._FIREBASE_API_KEY = "{{ FIREBASE_API_KEY }}";
+  window._FIREBASE_AUTH_DOMAIN = "{{ FIREBASE_AUTH_DOMAIN }}";
+  window._FIREBASE_PROJECT_ID = "{{ FIREBASE_PROJECT_ID }}";
+  window._FIREBASE_APP_ID = "{{ FIREBASE_APP_ID }}";
+  window.ENV_FIREBASE_API_KEY = window._FIREBASE_API_KEY;
+  window.ENV_FIREBASE_AUTH_DOMAIN = window._FIREBASE_AUTH_DOMAIN;
+  window.ENV_FIREBASE_PROJECT_ID = window._FIREBASE_PROJECT_ID;
+  window.ENV_FIREBASE_APP_ID = window._FIREBASE_APP_ID;
+  </script>
+  
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="page text-normal">
+  <div id="splash" aria-hidden="true">
+    <div class="splash-bg"></div>
+    <div class="splash-content">
+      <div class="logo-box">
+        <span class="line top"></span>
+        <span class="line right"></span>
+        <span class="line bottom"></span>
+        <span class="line left"></span>
+      </div>
+      <div id="splash-logo" class="logo-text">WALLS</div>
+      <div id="splash-catchphrase" class="catchphrase">Aids your mental health when you're stuck indoors.</div>
+    </div>
+  </div>
+  <header class="site-header" role="banner">
+    <div class="brand">
+      <div class="brand-mark logo-box inline-logo">
+        <span class="line top"></span>
+        <span class="line right"></span>
+        <span class="line bottom"></span>
+        <span class="line left"></span>
+      </div>
+      <div>
+        <div class="brand-title">WALLS</div>
+        <div class="brand-subtitle">Support. Wherever. Whenever.</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      {% block header_actions %}{% endblock %}
+      <nav aria-label="Accessibility controls" class="accessibility-panel">
+        <button id="a11y-toggle" class="btn btn-icon-only" aria-expanded="false" aria-controls="a11y-menu" aria-label="Settings and Accessibility">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+        <div id="a11y-menu" class="a11y-menu" hidden>
+          <div class="a11y-menu-header">Accessibility Settings</div>
+          <div class="a11y-row">
+            <span>Text size</span>
+            <div class="a11y-actions">
+              <button class="btn btn-ghost small-btn" data-text="normal" aria-label="Normal text size">A</button>
+              <button class="btn btn-ghost small-btn" data-text="large" aria-label="Increase text size">A+</button>
+              <button class="btn btn-ghost small-btn" data-text="xl" aria-label="Extra large text size">A++</button>
+            </div>
+          </div>
+          <div class="a11y-row">
+            <span>Colorblind-friendly</span>
+            <div class="a11y-actions">
+              <button class="btn btn-ghost small-btn" id="toggle-colorblind" aria-pressed="false">Toggle</button>
+            </div>
+          </div>
+          <div class="a11y-row">
+            <span>High contrast</span>
+            <div class="a11y-actions">
+              <button class="btn btn-ghost small-btn" id="toggle-highcontrast" aria-pressed="false">Toggle</button>
+            </div>
+          </div>
+          <div class="a11y-row">
+            <span>Reset</span>
+            <div class="a11y-actions">
+              <button class="btn btn-ghost small-btn" id="reset-a11y">Reset</button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content" role="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Universal Footer with Disclaimers -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-content">
+      <div class="footer-disclaimer">
+        <p class="disclaimer-primary">
+          <strong>Important:</strong> WALLS is a wellness reflection tool, not a medical service. 
+          It does not provide diagnosis, treatment, or professional mental health advice.
+        </p>
+        <p class="disclaimer-secondary">
+          The insights provided are for self-reflection only. Always consult a qualified healthcare 
+          professional for medical concerns or mental health treatment.
+        </p>
+      </div>
+      
+      <div class="footer-crisis">
+        <p class="crisis-heading">If you are experiencing a crisis:</p>
+        <div class="crisis-links">
+          <a href="tel:988" class="crisis-link-footer">
+            <span class="crisis-icon">📞</span>
+            <span><strong>988</strong> Suicide & Crisis Lifeline (US)</span>
+          </a>
+          <a href="https://www.opencounseling.com/suicide-hotlines" target="_blank" rel="noopener noreferrer" class="crisis-link-footer">
+            <span class="crisis-icon">🌍</span>
+            <span>International Crisis Hotlines</span>
+          </a>
+        </div>
+      </div>
+      
+      <div class="footer-meta">
+        <p>&copy; {{ now().year if now is defined else '2025' }} WALLS Wellness Tool</p>
+        <p class="footer-version">For educational and personal reflection purposes only.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Help Badge -->
+  <div class="floating-help" id="floating-help">
+    <button class="help-badge" id="help-badge" aria-expanded="false" aria-controls="help-panel" aria-label="Need help? Access crisis resources">
+      <span class="help-icon">💬</span>
+      <span class="help-text">Need help?</span>
+    </button>
+    <div class="help-panel" id="help-panel" hidden>
+      <div class="help-panel-header">
+        <span>Support Resources</span>
+        <button class="help-close" id="help-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="help-panel-content">
+        <p class="help-intro">If you're struggling, you're not alone. Help is available.</p>
+        
+        <a href="tel:988" class="help-action emergency">
+          <span class="action-icon">📞</span>
+          <div class="action-content">
+            <strong>988 Suicide & Crisis Lifeline</strong>
+            <span>24/7 Free & Confidential (US)</span>
+          </div>
+        </a>
+        
+        <a href="sms:741741?body=HELLO" class="help-action">
+          <span class="action-icon">💬</span>
+          <div class="action-content">
+            <strong>Crisis Text Line</strong>
+            <span>Text HELLO to 741741</span>
+          </div>
+        </a>
+        
+        <a href="https://www.opencounseling.com/suicide-hotlines" target="_blank" rel="noopener noreferrer" class="help-action">
+          <span class="action-icon">🌍</span>
+          <div class="action-content">
+            <strong>International Hotlines</strong>
+            <span>Find help in your country</span>
+          </div>
+        </a>
+        
+        <a href="{{ url_for('frontend.mindfulness') }}" class="help-action">
+          <span class="action-icon">🧘</span>
+          <div class="action-content">
+            <strong>Mindfulness Resources</strong>
+            <span>Breathing exercises & coping tools</span>
+          </div>
+        </a>
+      </div>
+      <div class="help-panel-footer">
+        <p>You matter. Help is just a call or text away. 💙</p>
+      </div>
+    </div>
+  </div>
+
+  {% block body_extra %}{% endblock %}
+  
+  <script>
+    const splash = document.getElementById('splash');
+    const splashLogo = document.getElementById('splash-logo');
+    const splashCatch = document.getElementById('splash-catchphrase');
+    const hasSeen = sessionStorage.getItem('hasSeenSplash');
+
+    if (splash) {
+      const hideSplash = () => {
+        splash.classList.add('hidden');
+        setTimeout(() => splash.remove(), 450);
+      };
+
+      if (!hasSeen) {
+        splash.classList.add('first-load');
+        if (splashCatch) splashCatch.classList.remove('hidden');
+        const dismiss = () => {
+          sessionStorage.setItem('hasSeenSplash', '1');
+          hideSplash();
+          splashLogo?.removeEventListener('click', dismiss);
+        };
+        splashLogo?.addEventListener('click', dismiss);
+      } else {
+        splash.classList.add('repeat-load');
+        if (splashCatch) splashCatch.classList.add('hidden');
+        setTimeout(() => {
+          hideSplash();
+        }, 3200);
+      }
+    }
+  </script>
+  <script>
+    // Character-by-character fade-in for titles
+    function applyCharFade() {
+      document.querySelectorAll('[data-animate="chars"]').forEach((el) => {
+        if (el.dataset.ready) return;
+        const text = el.textContent || "";
+        el.dataset.ready = "1";
+        el.textContent = "";
+        [...text].forEach((ch, idx) => {
+          const span = document.createElement("span");
+          span.textContent = ch === " " ? "\u00A0" : ch;
+          span.style.setProperty("--i", idx);
+          el.appendChild(span);
+        });
+        el.classList.add("fade-chars");
+      });
+      document.querySelectorAll('.fade-body').forEach((el) => {
+        if (el.dataset.ready) return;
+        el.dataset.ready = "1";
+      });
+    }
+    applyCharFade();
+  </script>
+  <script>
+    // Floating Help Badge
+    (function() {
+      const badge = document.getElementById('help-badge');
+      const panel = document.getElementById('help-panel');
+      const closeBtn = document.getElementById('help-close');
+      
+      if (badge && panel) {
+        badge.addEventListener('click', (e) => {
+          e.preventDefault();
+          const isOpen = !panel.hasAttribute('hidden');
+          if (isOpen) {
+            panel.setAttribute('hidden', '');
+            badge.setAttribute('aria-expanded', 'false');
+          } else {
+            panel.removeAttribute('hidden');
+            badge.setAttribute('aria-expanded', 'true');
+          }
+        });
+        
+        if (closeBtn) {
+          closeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            panel.setAttribute('hidden', '');
+            badge.setAttribute('aria-expanded', 'false');
+          });
+        }
+        
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !panel.hasAttribute('hidden')) {
+            panel.setAttribute('hidden', '');
+            badge.setAttribute('aria-expanded', 'false');
+          }
+        });
+        
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+          const helpContainer = document.getElementById('floating-help');
+          if (helpContainer && !helpContainer.contains(e.target) && !panel.hasAttribute('hidden')) {
+            panel.setAttribute('hidden', '');
+            badge.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    })();
+  </script>
+  <script src="{{ url_for('static', filename='js/accessibility.js') }}"></script>
+</body>
+</html>

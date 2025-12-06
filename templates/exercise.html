@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #3d87c7; /* Blue Background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Ensure full viewport height */
+    }
+    /* Pseudo-element for background image */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("{{ url_for('static', filename='images/Exercise.png') }}"); /* Background image URL */
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px); /* Apply blur effect */
+      z-index: -1; /* Place behind other content */
+    }
+
+    /* Blue tint overlay */
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-color: rgba(69, 190, 254, 0.5); /* Semi-transparent blue color */
+      z-index: -1; /* Place behind other content */
+    }
+
+    .container {
+      width: 80%;
+      background-color: white; /* Blue Box Background */
+      border: 5px solid #dddddd; /* Light Gray Border */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center; /* Center the title */
+    }
+
+    .container > h1, .container > p{
+      color: black;
+    }
+
+    h1 {
+      margin-top: 0; /* Remove default margin */
+    }
+
+    /* Taskbar Styles */
+    .taskbar {
+      position: fixed;
+      top: 0;
+      left: -200px; /* Initial position outside the viewport */
+      width: 200px;
+      height: 100%;
+      background-color: #F6F4F4; /* White Background */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: left 0.3s ease-in-out; /* Smooth transition for opening/closing */
+    }
+
+    .button2 {
+      background-color: transparent;
+      border: none;
+      color: #333333; /* Dark Text Color */
+      font-size: 16px;
+      cursor: pointer;
+      transition: color 0.3s ease-in-out;
+    }
+
+    .button2:hover {
+      color: #3D85C6; /* Blue Color on Hover */
+    }
+
+    /* Menu Button Styles */
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      cursor: pointer;
+      color: #3D4756; /* Deep Blue Color */
+      font-size: 24px;
+      z-index: 2; /* Ensure the button is above the taskbar */
+    }
+
+    .lines {
+      display: block;
+      margin: 8px 0;
+    }
+
+    .line {
+      height: 3px;
+      width: 30px;
+      background-color: #3D4756; /* Deep Blue Color */
+      margin: 5px 0;
+    }
+
+    /* Checkbox Styles */
+    .checkbox-label {
+      color: black;
+      margin-bottom: 20px;
+      font-size: 18px;
+      display: block;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .checkbox {
+      margin-right: 10px;
+    }
+
+    /* Placeholder Paragraph Styles */
+    .placeholder-text {
+      color: #555555; /* Dark Gray Text Color */
+      font-size: 18px;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Menu Button -->
+<div class="menu-button" onclick="toggleTaskbar()">
+    <div class="lines">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
+  </div>
+  <div class="taskbar2">
+    <div class="nav-buttons">
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        home
+      </span>
+      <button onclick="leave3()">Home</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        group
+      </span>
+      <button onclick="leave13()">Socialization</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        sentiment_neutral
+      </span>
+      <button onclick="leave4()">Survey</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        directions_run
+      </span>
+      <button onclick="leave5()">Exercise</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        calendar_month
+      </span>
+      <button onclick="leave12()">Calendar</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        menu_book
+      </span>
+      <button onclick="leave2()">Philosophies</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        local_hospital
+      </span>
+      <button onclick="leave20()">Additional aid</button>
+    </div>
+    <img class="logo" src="{{ url_for('static', filename='images/WallsLogo2.PNG') }}" alt="Walls Logo">
+  </div>
+  <style>
+      .taskbar {
+        position: fixed;
+        top: 0;
+        left: -200px; /* Initial position outside the viewport */
+        width: 200px;
+        height: 100%;
+        background-color: #F6F4F4; /* White Background */
+        box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s ease-in-out;
+        z-index: 1; /* Ensure the taskbar is behind the button */
+        overflow: hidden; /* Hide potential scrollbar */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+  
+    .taskbar2 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: #3D85C6; /* Blue Background */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+  
+      .taskbar2 .nav-buttons button {
+        background-color: transparent;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+  
+      .taskbar2 .nav-buttons span {
+        margin-left: 40px;
+      }
+  
+      .taskbar2 .nav-buttons button:hover {
+        
+        text-decoration: underline;
+      }
+  
+      .taskbar2 .nav-buttons button:last-child {
+        margin-right: 0;
+      }
+  
+      .logo {
+              width: 200px;
+              height: 50px;
+              margin-right: 20px;
+          }
+  
+      .taskbar2::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background-color: #787987; /* Gray line at the bottom */
+      }
+      headers {
+        font-size:30px;
+        color: #293553;
+      }
+  
+  </style>
+  
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <span class="material-symbols-outlined" style="font-size:50px">
+      home
+    </span>
+    <button class="button2" onclick="leave3()">Home</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      sentiment_neutral
+    </span>
+    <button class="button2" onclick="leave4()">Survey</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      directions_run
+    </span>
+    <button class="button2" onclick="leave5()">Exercise</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      calendar_month
+    </span>
+    <button class="button2" onclick="leave12()">Calendar</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      menu_book
+    </span>
+    <button class="button2" onclick="leave2()">Philosophies</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      local_hospital
+    </span>
+    <button class="button2" onclick="leave20()">Additional aid</button>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+      function leave2() {
+          window.location.href = "{{ url_for('legacy.philo') }}"
+      }
+      function leave5() {
+          window.location.href = "{{ url_for('legacy.exercise') }}"
+      }
+      function leave3() {
+          window.location.href = "{{ url_for('legacy.thome') }}"
+      }
+      function leave20() {
+          window.location.href = "{{ url_for('legacy.aid') }}"
+      }
+      function leave4() {
+          window.location.href = "{{ url_for('legacy.survey') }}"
+      }
+      function leave12() {
+          window.location.href = "{{ url_for('legacy.calendar') }}"
+      }
+      function leave13() {
+          window.location.href = "{{ url_for('legacy.social') }}"
+      }
+    </script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0" />
+  </div>
+  
+  
+<div class="container">
+  <h1>Exercise</h1>
+
+  <!-- Checkbox for Exercise Done Today -->
+  <label class="checkbox-label">
+    <div class="checkbox-container">
+      <input type="checkbox" id="exercise-checkbox" class="checkbox" onchange="deleteCheckbox()">
+      <span>Exercise done today</span>
+    </div>
+  </label>
+
+  <!-- Placeholder Paragraph -->
+  <p class="placeholder-text">
+    ________________________________________________________________________________________________________________________ <br>
+    Imagine discovering a pill that has been proven to slow aging, lengthen lifespan, improve body composition, and hundreds
+    of other benefits. Naturally, you would do what you could to get your hands on this miracle, right?<br><br>
+
+    Shockingly, it is available to everyone for no price, equipment, or qualifications, yet many avoid it like the plague.
+    It takes the name of a practice: exercise<br><br>
+
+    There are millions of ways to becom active with no equipment or experience; walking, chair yoga, calinstethics, are
+    just a few examples. We at WALLS do not mind what you choose, but we hope that you aim to exercise, depending on the
+    intensity, at least 120 minutes per week, as the National Health Comitee advises.<br><br>
+
+    Some resources you can use for basic exercise include the NIKE Training App, follow-along youtube videos. "Run" by Under
+    Armor, and articles by Healthline.us. We wish you the best on your active journeys!<br><br>
+
+    Relevant links:<br>
+
+    <a href = "https://www.nike.com/ntc-app">Nike Train From Home</a><br>
+    <a href = "https://www.verywellfit.com/chair-yoga-poses-3567189">Chair Yoga Service</a><br>
+    <a href = "https://www.hybridcalisthenics.com/pullups">Calinstethics Service</a><br>
+    <a href = "https://www.mapmyrun.com/us/">"Run" By Under Armor</a><br>
+
+    </p>
+</div>
+
+<script>
+  // Function to toggle taskbar visibility
+  function toggleTaskbar() {
+    const taskbar = document.querySelector('.taskbar');
+    const newLeft = taskbar.style.left === '0px' ? '-200px' : '0px';
+    taskbar.style.left = newLeft;
+  }
+
+  // Navigation functions
+  function leave2() {
+    window.location.href = "{{ url_for('legacy.philo') }}"
+  }
+
+  function leave5() {
+    window.location.href = "{{ url_for('legacy.exercise') }}"
+  }
+
+  function leave3() {
+    window.location.href = "{{ url_for('legacy.thome') }}"
+  }
+
+  function leave4() {
+    window.location.href = "{{ url_for('legacy.survey') }}"
+  }
+
+  // Function to delete checkbox when clicked
+  function deleteCheckbox() {
+    const checkbox = document.getElementById('exercise-checkbox');
+    if (checkbox.checked) {
+      checkbox.parentElement.remove();
+    }
+  }
+</script>
+
+</body>
+</html>

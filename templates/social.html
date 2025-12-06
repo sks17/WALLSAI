@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter Text</title>
+  <style>
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #3d87c7; /* Blue Background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Ensure full viewport height */
+    }
+    /* Pseudo-element for background image */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("{{ url_for('static', filename='images/Social.png') }}"); /* Background image URL */
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px); /* Apply blur effect */
+      z-index: -1; /* Place behind other content */
+    }
+
+    /* Blue tint overlay */
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-color: rgba(69, 190, 254, 0.5); /* Semi-transparent blue color */
+      z-index: -1; /* Place behind other content */
+    }
+
+    .container {
+      width: 80%;
+      margin: 50px auto;
+      background-color: #F6F4F4; /* White Container Background */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333333; /* Dark Text Color */
+      text-align: center;
+    }
+
+    .input-field {
+      width: calc(100% - 32px); /* Adjusted width */
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #dddddd; /* Light Gray Outline */
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 16px; /* Medium Font Size */
+      color: #333333; /* Dark Text Color */
+      resize: vertical; /* Allow vertical resizing */
+    }
+
+    .submit-button {
+      background-color: #4CAF50; /* Green Button Color */
+      border: none;
+      color: white;
+      padding: 10px 24px;
+      margin-top: 10px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px; /* Medium Font Size */
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .submitted-answer {
+      margin-top: 20px;
+      font-size: 18px; /* Larger Font Size */
+    }
+
+    /* Menu Button Styles */
+    .menu-button {
+      position: fixed;
+      top: 15px;
+      left: 20px;
+      cursor: pointer;
+      font-size: 24px;
+      z-index: 1; /* Ensure the button is above the taskbar */
+    }
+
+    .menu-line {
+      width: 20px;
+      height: 3px;
+      background-color: #212121; /* Gray Color for Menu Lines */
+      margin: 4px 0;
+    }
+
+    /* Sliding Menu Styles */
+    .menu-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200px; /* Smaller Width */
+      height: 100%;
+      background-color: #F6F4F4; /* White Background */
+      transition: transform 0.3s ease-in-out;
+      transform: translateX(-100%);
+      z-index: 2; /* Ensure menu is above other content */
+      padding: 20px; /* Add padding */
+    }
+
+    .menu-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            color: #3D4756; /* Deep Blue Color */
+            font-size: 24px;
+            z-index: 2; /* Ensure the button is above the taskbar */
+        }
+
+    .menu-close-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: transparent;
+      border: none;
+      color: #333333; /* Dark Text Color */
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<!-- Menu Button -->
+<div class="menu-button" onclick="toggleTaskbar()">
+    <div class="lines">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
+  </div>
+  <div class="taskbar2">
+    <div class="nav-buttons">
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        home
+      </span>
+      <button onclick="leave3()">Home</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        group
+      </span>
+      <button onclick="leave13()">Socialization</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        sentiment_neutral
+      </span>
+      <button onclick="leave4()">Survey</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        directions_run
+      </span>
+      <button onclick="leave5()">Exercise</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        calendar_month
+      </span>
+      <button onclick="leave12()">Calendar</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        menu_book
+      </span>
+      <button onclick="leave2()">Philosophies</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        local_hospital
+      </span>
+      <button onclick="leave20()">Additional aid</button>
+    </div>
+    <img class="logo" src="{{ url_for('static', filename='images/WallsLogo2.PNG') }}" alt="Walls Logo">
+  </div>
+  <style>
+      .taskbar {
+        position: fixed;
+        top: 0;
+        left: -200px; /* Initial position outside the viewport */
+        width: 200px;
+        height: 100%;
+        background-color: #F6F4F4; /* White Background */
+        box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s ease-in-out;
+        z-index: 1; /* Ensure the taskbar is behind the button */
+        overflow: hidden; /* Hide potential scrollbar */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+  
+    .taskbar2 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: #3D85C6; /* Blue Background */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+  
+      .taskbar2 .nav-buttons button {
+        background-color: transparent;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+  
+      .taskbar2 .nav-buttons span {
+        margin-left: 40px;
+      }
+  
+      .taskbar2 .nav-buttons button:hover {
+        
+        text-decoration: underline;
+      }
+  
+      .taskbar2 .nav-buttons button:last-child {
+        margin-right: 0;
+      }
+  
+      .logo {
+              width: 200px;
+              height: 50px;
+              margin-right: 20px;
+          }
+  
+      .taskbar2::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background-color: #787987; /* Gray line at the bottom */
+      }
+      headers {
+        font-size:30px;
+        color: #293553;
+      }
+  
+  </style>
+  
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <span class="material-symbols-outlined" style="font-size:50px">
+      home
+    </span>
+    <button class="button2" onclick="leave3()">Home</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      sentiment_neutral
+    </span>
+    <button class="button2" onclick="leave4()">Survey</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      directions_run
+    </span>
+    <button class="button2" onclick="leave5()">Exercise</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      calendar_month
+    </span>
+    <button class="button2" onclick="leave12()">Calendar</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      menu_book
+    </span>
+    <button class="button2" onclick="leave2()">Philosophies</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      local_hospital
+    </span>
+    <button class="button2" onclick="leave20()">Additional aid</button>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+      function leave2() {
+          window.location.href = "{{ url_for('legacy.philo') }}"
+      }
+      function leave5() {
+          window.location.href = "{{ url_for('legacy.exercise') }}"
+      }
+      function leave3() {
+          window.location.href = "{{ url_for('legacy.thome') }}"
+      }
+      function leave20() {
+          window.location.href = "{{ url_for('legacy.aid') }}"
+      }
+      function leave4() {
+          window.location.href = "{{ url_for('legacy.survey') }}"
+      }
+      function leave12() {
+          window.location.href = "{{ url_for('legacy.calendar') }}"
+      }
+      function leave13() {
+          window.location.href = "{{ url_for('legacy.social') }}"
+      }
+    </script>
+  </div>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0" />
+  
+  
+
+<div class="container">
+  <h1>Enter Bio (Available to the Public!)</h1>
+
+  <!-- Text Input Field -->
+  <textarea id="text-input" class="input-field" placeholder="Type your text here..." oninput="autoExpand(this)" onkeydown="handleKeyPress(event)"></textarea>
+
+  <!-- Submit Button -->
+  <button class="submit-button" onclick="submitText()">Submit</button>
+
+  <!-- Display Submitted Answers -->
+  <div id="submitted-answers" class="submitted-answer"></div>
+</div>
+
+<script>
+  // Function to open menu
+  function openMenu() {
+    document.getElementById('menu').style.transform = 'translateX(0)';
+  }
+
+  // Function to close menu
+  function closeMenu() {
+    document.getElementById('menu').style.transform = 'translateX(-100%)';
+  }
+
+  // Function to submit text
+  function submitText() {
+    const textInput = document.getElementById('text-input');
+    const submittedAnswers = document.getElementById('submitted-answers');
+    const text = textInput.value; // No need to trim here
+    if (text !== '') {
+      const newAnswer = document.createElement('div');
+      newAnswer.textContent = text;
+      submittedAnswers.appendChild(newAnswer);
+      textInput.value = ''; // Clear text box after submission
+      autoExpand(textInput); // Adjust textarea height after submission
+    }
+  }
+
+  // Function to auto-expand textarea
+  function autoExpand(textarea) {
+    // Reset height to auto to shrink back if needed
+    textarea.style.height = 'auto';
+    // Set the height of the textarea based on its scroll height and scroll padding
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  // Function to handle key press event (to preserve new line characters)
+  function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+      // Append new line character instead of submitting the form
+      event.preventDefault();
+      const textInput = event.target;
+      const startPos = textInput.selectionStart;
+      const endPos = textInput.selectionEnd;
+      const textBeforeCursor = textInput.value.substring(0, startPos);
+      const textAfterCursor = textInput.value.substring(endPos, textInput.value.length);
+      textInput.value = textBeforeCursor + '\n' + textAfterCursor;
+      // Move cursor to the new line
+      textInput.selectionStart = startPos + 1;
+      textInput.selectionEnd = startPos + 1;
+      autoExpand(textInput); // Adjust textarea height after pressing Enter
+    }
+  }
+</script>
+
+</body>
+</html>

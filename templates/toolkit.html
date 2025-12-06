@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% block title %}WALLS Toolkit{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/kernel.css') }}">
+{% endblock %}
+
+{% block header_actions %}
+<a class="btn btn-ghost" href="{{ url_for('frontend.dashboard') }}">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<section class="hero fade-in">
+    <h1 data-animate="chars">YourWellnessToolkit</h1>
+    <p class="fade-body">Everything you need for your mental health journey in one place.</p>
+</section>
+
+<div class="toolkit-container">
+    <div class="toolkit-grid">
+        <!-- Assessment Tools -->
+        <div class="toolkit-card primary-card">
+            <div class="card-icon">📊</div>
+            <h2>Take an Assessment</h2>
+            <p>Complete a quick mental health check-in to track your wellbeing over time.</p>
+            <a href="{{ url_for('frontend.survey') }}" class="btn btn-primary">Start Survey</a>
+        </div>
+        
+        <!-- Notes & Reflections -->
+        <div class="toolkit-card">
+            <div class="card-icon">📝</div>
+            <h2>Notes & Reflections</h2>
+            <p>Journal your thoughts, track patterns, and reflect on your mental health journey.</p>
+            <a href="{{ url_for('frontend.notes') }}" class="btn btn-secondary">Open Notes</a>
+        </div>
+        
+        <!-- Mindfulness Resources -->
+        <div class="toolkit-card">
+            <div class="card-icon">🧘</div>
+            <h2>Mindfulness Resources</h2>
+            <p>Guided breathing exercises, meditation links, and stress management tools.</p>
+            <a href="{{ url_for('frontend.mindfulness') }}" class="btn btn-secondary">Explore</a>
+        </div>
+        
+        <!-- Dashboard -->
+        <div class="toolkit-card">
+            <div class="card-icon">📈</div>
+            <h2>Your Progress</h2>
+            <p>View your assessment history, trends, and visualize your mental health data.</p>
+            <a href="{{ url_for('frontend.dashboard') }}" class="btn btn-secondary">View Dashboard</a>
+        </div>
+        
+        <!-- Learn Section -->
+        <div class="toolkit-card">
+            <div class="card-icon">📚</div>
+            <h2>Learn</h2>
+            <p>Understand the science of stress, anxiety, sleep, and depression.</p>
+            <a href="{{ url_for('frontend.mindfulness') }}#learn" class="btn btn-secondary">Start Learning</a>
+        </div>
+        
+        <!-- Find Help -->
+        <div class="toolkit-card crisis-card">
+            <div class="card-icon">🔍</div>
+            <h2>Find a Therapist</h2>
+            <p>Search for mental health professionals in your area.</p>
+            <a href="{{ url_for('frontend.mindfulness') }}#therapist" class="btn btn-secondary">Search</a>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="quick-grid">
+            <button class="quick-btn" onclick="window.location.href='{{ url_for('frontend.mindfulness') }}'">
+                <span class="quick-icon">🫁</span>
+                <span>Breathing Exercise</span>
+            </button>
+            <button class="quick-btn" onclick="window.location.href='{{ url_for('frontend.notes') }}'">
+                <span class="quick-icon">✏️</span>
+                <span>Quick Note</span>
+            </button>
+            <button class="quick-btn" onclick="window.location.href='{{ url_for('frontend.survey') }}'">
+                <span class="quick-icon">🎯</span>
+                <span>Check-in</span>
+            </button>
+        </div>
+    </section>
+    
+    <!-- Crisis Resources -->
+    <section class="crisis-section">
+        <div class="crisis-box">
+            <div class="crisis-content">
+                <h3>🆘 Need Immediate Help?</h3>
+                <p>If you're in crisis or having thoughts of self-harm, please reach out:</p>
+            </div>
+            <div class="crisis-buttons">
+                <a href="tel:988" class="crisis-btn">📞 Call 988 (US)</a>
+                <a href="sms:741741?body=HOME" class="crisis-btn">💬 Text HOME to 741741</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<style>
+.toolkit-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+.toolkit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+.toolkit-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 32px;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+}
+
+.toolkit-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-soft);
+}
+
+.toolkit-card.primary-card {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(0, 212, 170, 0.05));
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.toolkit-card.crisis-card {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 107, 107, 0.05));
+}
+
+.card-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+
+.toolkit-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    color: var(--text);
+}
+
+.toolkit-card p {
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.btn-secondary {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--bg-tint);
+    color: var(--text);
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Quick Actions */
+.quick-actions {
+    margin-bottom: 60px;
+}
+
+.quick-actions h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 1.2rem;
+}
+
+.quick-grid {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.quick-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 32px;
+    background: var(--card);
+    border: 1px solid var(--bg-tint);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 140px;
+}
+
+.quick-btn:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.quick-icon {
+    font-size: 28px;
+}
+
+.quick-btn span:last-child {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* Crisis Section */
+.crisis-section {
+    margin-top: 40px;
+}
+
+.crisis-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 32px;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 107, 107, 0.05));
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 16px;
+    flex-wrap: wrap;
+}
+
+.crisis-content h3 {
+    margin: 0 0 8px;
+    color: #ff6b6b;
+}
+
+.crisis-content p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.crisis-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.crisis-btn {
+    padding: 12px 20px;
+    background: #ff6b6b;
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.crisis-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+@media (max-width: 640px) {
+    .toolkit-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .crisis-box {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .crisis-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .crisis-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+

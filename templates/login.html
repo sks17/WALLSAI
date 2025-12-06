@@ -1,0 +1,556 @@
+{% extends "base.html" %}
+{% block title %}Login | WALLS{% endblock %}
+
+{% block head_extra %}
+<!-- Firebase Configuration (injected from Flask) -->
+<script>
+window._FIREBASE_API_KEY = "{{ FIREBASE_API_KEY }}";
+window._FIREBASE_AUTH_DOMAIN = "{{ FIREBASE_AUTH_DOMAIN }}";
+window._FIREBASE_PROJECT_ID = "{{ FIREBASE_PROJECT_ID }}";
+window._FIREBASE_APP_ID = "{{ FIREBASE_APP_ID }}";
+window._FIREBASE_STORAGE_BUCKET = "{{ FIREBASE_STORAGE_BUCKET }}";
+window._FIREBASE_MESSAGING_SENDER_ID = "{{ FIREBASE_MESSAGING_SENDER_ID }}";
+// Also set with ENV_ prefix for firebase-init.js
+window.ENV_FIREBASE_API_KEY = window._FIREBASE_API_KEY;
+window.ENV_FIREBASE_AUTH_DOMAIN = window._FIREBASE_AUTH_DOMAIN;
+window.ENV_FIREBASE_PROJECT_ID = window._FIREBASE_PROJECT_ID;
+window.ENV_FIREBASE_APP_ID = window._FIREBASE_APP_ID;
+window.ENV_FIREBASE_STORAGE_BUCKET = window._FIREBASE_STORAGE_BUCKET;
+window.ENV_FIREBASE_MESSAGING_SENDER_ID = window._FIREBASE_MESSAGING_SENDER_ID;
+</script>
+
+<!-- Firebase Modules -->
+<script type="module" src="{{ url_for('static', filename='js/firebase-init.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/firebase-login.js') }}"></script>
+
+    <style>
+/* =========================================================================
+   Auth Card Container
+   ========================================================================= */
+.auth-card {
+  max-width: 440px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 40px 36px;
+}
+
+/* =========================================================================
+   Tab Navigation
+   ========================================================================= */
+.auth-tabs {
+      display: flex;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all 0.25s ease;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  border-radius: 8px 8px 0 0;
+}
+
+.auth-tab:hover {
+  color: var(--text);
+  background: rgba(95, 175, 191, 0.05);
+}
+
+.auth-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: rgba(95, 175, 191, 0.08);
+}
+
+/* =========================================================================
+   Form Container
+   ========================================================================= */
+.auth-form-container {
+  position: relative;
+  min-height: 280px;
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.active {
+  display: block;
+  animation: fadeIn 0.35s ease;
+}
+
+/* =========================================================================
+   Form Fields - Enhanced Spacing & Aesthetics
+   ========================================================================= */
+.auth-form .form-field {
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.auth-form .form-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.auth-form .form-field input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 15px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.2s ease;
+}
+
+.auth-form .form-field input::placeholder {
+  color: rgba(102, 102, 102, 0.5);
+  font-weight: 400;
+}
+
+.auth-form .form-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(95, 175, 191, 0.15);
+  background: #fff;
+}
+
+.auth-form .form-field input:hover:not(:focus) {
+  border-color: rgba(95, 175, 191, 0.5);
+}
+
+/* =========================================================================
+   Submit Button
+   ========================================================================= */
+.auth-form .btn-primary {
+      width: 100%;
+  padding: 16px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 8px;
+  border-radius: var(--radius);
+  transition: all 0.25s ease;
+}
+
+.auth-form .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(95, 175, 191, 0.3);
+}
+
+/* =========================================================================
+   Divider
+   ========================================================================= */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 28px 0;
+  gap: 16px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+      content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+.auth-divider span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* =========================================================================
+   Social Login Buttons
+   ========================================================================= */
+.social-login {
+            display: flex;
+            flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-social {
+  display: flex;
+            align-items: center;
+            justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-social:hover {
+  background: var(--bg-tint);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn-social:active {
+  transform: translateY(0);
+}
+
+.btn-social svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.btn-google {
+  background: #fff;
+}
+
+.btn-google:hover {
+  background: #f8f9fa;
+  border-color: #4285f4;
+}
+
+/* =========================================================================
+   Messages
+   ========================================================================= */
+.auth-error {
+  padding: 14px 18px;
+  background: rgba(255, 107, 107, 0.08);
+  border: 1px solid rgba(255, 107, 107, 0.25);
+  border-radius: var(--radius);
+  color: #e74c3c;
+  font-size: 14px;
+  margin-bottom: 20px;
+  display: none;
+  text-align: left;
+}
+
+.auth-error.visible {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: shake 0.4s ease;
+}
+
+.auth-success {
+  padding: 14px 18px;
+  background: rgba(0, 212, 170, 0.08);
+  border: 1px solid rgba(0, 212, 170, 0.25);
+  border-radius: var(--radius);
+  color: #00a67d;
+  font-size: 14px;
+  margin-bottom: 20px;
+  display: none;
+  text-align: left;
+}
+
+.auth-success.visible {
+            display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* =========================================================================
+   Loading State
+   ========================================================================= */
+.auth-loading {
+  display: inline-flex;
+            align-items: center;
+  gap: 10px;
+}
+
+.auth-loading .spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* =========================================================================
+   Demo Notice
+   ========================================================================= */
+.demo-notice {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.06), rgba(139, 92, 246, 0.06));
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 24px;
+  text-align: left;
+}
+
+.demo-notice strong {
+  color: #3b82f6;
+}
+
+/* =========================================================================
+   Animations
+   ========================================================================= */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =========================================================================
+   Responsive
+   ========================================================================= */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 28px 20px;
+    margin: 0 12px;
+  }
+  
+  .auth-tabs {
+    gap: 4px;
+  }
+  
+  .auth-tab {
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<section class="hero fade-in">
+  <h1 data-animate="chars">Welcome to Your Mental Health Journey</h1>
+  <p class="fade-body">Take a moment. Breathe. Let's begin.</p>
+  <p class="muted fade-body" style="margin-top:12px;">
+    WALLS helps you track your mental wellbeing through self-reflection surveys and personalized insights.
+  </p>
+</section>
+
+<section class="journey-section fade-delayed">
+  <div class="soft-card auth-card" role="form" aria-labelledby="auth-title">
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" id="login-tab">Sign In</button>
+      <button class="auth-tab" data-tab="signup" id="signup-tab">Create Account</button>
+    </div>
+
+    <!-- Error/Success Messages -->
+    <div id="auth-error" class="auth-error" role="alert">
+      <span>⚠️</span>
+      <span id="auth-error-text"></span>
+    </div>
+    <div id="auth-success" class="auth-success" role="status">
+      <span>✓</span>
+      <span id="auth-success-text"></span>
+    </div>
+
+    <div class="auth-form-container">
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form active form" data-form="login">
+        <div class="form-field">
+          <label for="login-email">Email Address</label>
+          <input id="login-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="form-field">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" name="password" placeholder="Enter your password" autocomplete="current-password" required />
+  </div>
+        <button type="submit" class="btn btn-primary" id="login-btn">
+          <span class="btn-text">Sign In</span>
+        </button>
+        
+        <div class="auth-divider">
+          <span>or continue with</span>
+        </div>
+        
+        <div class="social-login">
+          <button type="button" class="btn-social btn-google" id="google-login-btn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continue with Google
+          </button>
+        </div>
+        </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" class="auth-form form" data-form="signup">
+        <div class="form-field">
+          <label for="signup-email">Email Address</label>
+          <input id="signup-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="form-field">
+          <label for="signup-password">Password</label>
+          <input id="signup-password" type="password" name="password" placeholder="Create a password (min 6 characters)" minlength="6" autocomplete="new-password" required />
+            </div>
+        <div class="form-field">
+          <label for="signup-confirm">Confirm Password</label>
+          <input id="signup-confirm" type="password" name="confirm" placeholder="Re-enter your password" autocomplete="new-password" required />
+            </div>
+        <button type="submit" class="btn btn-primary" id="signup-btn">
+          <span class="btn-text">Create Account</span>
+        </button>
+        
+        <div class="auth-divider">
+          <span>or continue with</span>
+        </div>
+
+        <div class="social-login">
+          <button type="button" class="btn-social btn-google" id="google-signup-btn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Sign up with Google
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="demo-notice" id="demo-notice">
+      <strong>💡 Development Mode:</strong> Firebase is not configured. Email/password login uses mock authentication.
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block body_extra %}
+<script>
+(function() {
+  'use strict';
+  
+  const loginTab = document.getElementById('login-tab');
+  const signupTab = document.getElementById('signup-tab');
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+  const demoNotice = document.getElementById('demo-notice');
+  const errorEl = document.getElementById('auth-error');
+  const errorText = document.getElementById('auth-error-text');
+  const successEl = document.getElementById('auth-success');
+  const successText = document.getElementById('auth-success-text');
+  
+  // Tab switching
+  function switchTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    
+    if (tab === 'login') {
+      loginTab.classList.add('active');
+      loginForm.classList.add('active');
+    } else {
+      signupTab.classList.add('active');
+      signupForm.classList.add('active');
+    }
+    
+    // Hide messages
+    hideMessages();
+  }
+  
+  function showError(message) {
+    if (errorText) errorText.textContent = message;
+    if (errorEl) errorEl.classList.add('visible');
+    if (successEl) successEl.classList.remove('visible');
+  }
+  
+  function showSuccess(message) {
+    if (successText) successText.textContent = message;
+    if (successEl) successEl.classList.add('visible');
+    if (errorEl) errorEl.classList.remove('visible');
+  }
+  
+  function hideMessages() {
+    if (errorEl) errorEl.classList.remove('visible');
+    if (successEl) successEl.classList.remove('visible');
+  }
+  
+  if (loginTab) loginTab.addEventListener('click', () => switchTab('login'));
+  if (signupTab) signupTab.addEventListener('click', () => switchTab('signup'));
+  
+  // Google Sign-In buttons
+  const googleLoginBtn = document.getElementById('google-login-btn');
+  const googleSignupBtn = document.getElementById('google-signup-btn');
+  
+  async function handleGoogleSignIn() {
+    hideMessages();
+    
+    // Wait for FirebaseLogin to be available
+    if (!window.FirebaseLogin) {
+      showError('Please wait, authentication is loading...');
+      setTimeout(handleGoogleSignIn, 500);
+      return;
+    }
+    
+    try {
+      const user = await window.FirebaseLogin.signInWithGoogle();
+      showSuccess('Signed in with Google! Redirecting...');
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 1000);
+    } catch (error) {
+      console.error('[Auth] Google sign-in error:', error);
+      
+      const errorMessages = {
+        'auth/popup-closed-by-user': 'Sign-in popup was closed. Please try again.',
+        'auth/popup-blocked': 'Popup was blocked. Please allow popups for this site.',
+        'auth/cancelled-popup-request': 'Sign-in was cancelled.',
+        'auth/network-request-failed': 'Network error. Please check your connection.'
+      };
+      
+      showError(errorMessages[error.code] || error.message || 'Google sign-in failed');
+    }
+  }
+  
+  if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleGoogleSignIn();
+    });
+  }
+  
+  if (googleSignupBtn) {
+    googleSignupBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleGoogleSignIn();
+    });
+  }
+  
+  // Check if Firebase is configured and hide demo notice
+  setTimeout(() => {
+    if (window.FirebaseLogin && window.FirebaseLogin.isConfigured()) {
+      if (demoNotice) demoNotice.style.display = 'none';
+    }
+  }, 500);
+})();
+    </script>
+{% endblock %}

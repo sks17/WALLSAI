@@ -1,0 +1,312 @@
+{# 
+  AI Visualization Section Partial
+  
+  A reusable dark-mode visualization zone that can be included in any template.
+  Contains 3D visualizations (point cloud, hyperplane, mental sphere) and 
+  2D charts (radar, trend line, comparison).
+  
+  Usage: {% include 'ai_section.html' %}
+#}
+
+<section class="ai-zone" id="ai-visualization-zone" aria-label="AI Deep Analysis">
+  <div class="ai-bg-grid"></div>
+  
+  {# Header #}
+  <div class="ai-zone__header">
+    <div class="ai-zone__title">
+      <span>Neural Analysis Engine</span>
+    </div>
+    <div class="ai-zone__status">
+      <span class="ai-zone__status-dot"></span>
+      <span>ACTIVE — Processing</span>
+    </div>
+  </div>
+
+  {# Score Meters #}
+  <div class="ai-grid ai-grid--2x2" style="margin-bottom: 24px;">
+    <div class="ai-card">
+      <div class="ai-meter">
+        <div class="ai-meter__label">
+          <span class="ai-meter__name">Stress Level</span>
+          <span class="ai-meter__value" id="meter-stress-value">0.0</span>
+        </div>
+        <div class="ai-meter__bar">
+          <div class="ai-meter__fill ai-meter__fill--stress" id="meter-stress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-meter">
+        <div class="ai-meter__label">
+          <span class="ai-meter__name">Depression Index</span>
+          <span class="ai-meter__value" id="meter-depression-value">0.0</span>
+        </div>
+        <div class="ai-meter__bar">
+          <div class="ai-meter__fill ai-meter__fill--depression" id="meter-depression-fill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-meter">
+        <div class="ai-meter__label">
+          <span class="ai-meter__name">Anxiety Signal</span>
+          <span class="ai-meter__value" id="meter-anxiety-value">0.0</span>
+        </div>
+        <div class="ai-meter__bar">
+          <div class="ai-meter__fill ai-meter__fill--anxiety" id="meter-anxiety-fill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-meter">
+        <div class="ai-meter__label">
+          <span class="ai-meter__name">Sleep Quality</span>
+          <span class="ai-meter__value" id="meter-sleep-value">0.0</span>
+        </div>
+        <div class="ai-meter__bar">
+          <div class="ai-meter__fill ai-meter__fill--sleep" id="meter-sleep-fill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-divider"></div>
+
+  {# 3D Visualizations Section #}
+  <div class="ai-zone__header" style="margin-top: 16px;">
+    <div class="ai-zone__title">
+      <span>3D Neural Manifold</span>
+    </div>
+  </div>
+
+  <div class="ai-grid ai-grid--3col" style="margin-bottom: 24px;">
+    {# Point Cloud #}
+    <div class="ai-card">
+      <div class="ai-card__header">
+        <span class="ai-card__label">Emotional Embedding Space</span>
+        <button class="ai-card__toggle" data-toggle="point-cloud">Toggle</button>
+      </div>
+      <div class="ai-canvas-container" id="point-cloud-container">
+        <canvas id="point-cloud-canvas"></canvas>
+        <div class="ai-canvas-overlay">
+          <div class="ai-canvas-overlay__metric">
+            <span class="ai-canvas-overlay__dot" style="background: #ff6b6b;"></span>
+            <span>Stress Axis</span>
+          </div>
+          <div class="ai-canvas-overlay__metric">
+            <span class="ai-canvas-overlay__dot" style="background: #00f5ff;"></span>
+            <span>Anxiety Axis</span>
+          </div>
+        </div>
+      </div>
+      <p class="ai-card__caption">
+        Each point represents an emotional state vector. Clustering indicates recurring patterns.
+      </p>
+    </div>
+
+    {# Hyperplane #}
+    <div class="ai-card ai-card--magenta">
+      <div class="ai-card__header">
+        <span class="ai-card__label">Decision Hyperplanes</span>
+        <button class="ai-card__toggle" data-toggle="hyperplane">Toggle</button>
+      </div>
+      <div class="ai-canvas-container" id="hyperplane-container">
+        <canvas id="hyperplane-canvas"></canvas>
+        <div class="ai-canvas-overlay">
+          <div class="ai-canvas-overlay__metric">
+            <span class="ai-canvas-overlay__dot" style="background: #8b5cf6;"></span>
+            <span>Model Boundaries</span>
+          </div>
+        </div>
+      </div>
+      <p class="ai-card__caption">
+        Visualizing the ML model's decision surfaces. Plane angles shift based on your scores.
+      </p>
+    </div>
+
+    {# Mental Sphere #}
+    <div class="ai-card ai-card--purple">
+      <div class="ai-card__header">
+        <span class="ai-card__label">Mental State Sphere</span>
+        <button class="ai-card__toggle" data-toggle="mental-sphere">Toggle</button>
+      </div>
+      <div class="ai-canvas-container" id="mental-sphere-container">
+        <canvas id="mental-sphere-canvas"></canvas>
+        <div class="ai-canvas-overlay">
+          <div class="ai-canvas-overlay__metric">
+            <span>Radius = Stress</span>
+          </div>
+          <div class="ai-canvas-overlay__metric">
+            <span>Vibration = Anxiety</span>
+          </div>
+          <div class="ai-canvas-overlay__metric">
+            <span>Glow = Depression</span>
+          </div>
+        </div>
+      </div>
+      <p class="ai-card__caption">
+        A living representation of your mental state. The sphere morphs in real-time.
+      </p>
+    </div>
+  </div>
+
+  <div class="ai-divider"></div>
+
+  {# 2D Charts Section #}
+  <div class="ai-zone__header" style="margin-top: 16px;">
+    <div class="ai-zone__title">
+      <span>Statistical Analysis</span>
+    </div>
+  </div>
+
+  <div class="ai-grid ai-grid--main" style="margin-bottom: 24px;">
+    {# Trend Chart (larger) #}
+    <div class="ai-card">
+      <div class="ai-card__header">
+        <span class="ai-card__label">Emotional Trajectory</span>
+      </div>
+      <div class="ai-chart-container ai-chart-container--large">
+        <canvas id="trend-chart"></canvas>
+      </div>
+      <p class="ai-card__caption">
+        Your mental health metrics over time. Look for patterns and trends.
+      </p>
+    </div>
+
+    {# Radar Chart (smaller) #}
+    <div class="ai-card">
+      <div class="ai-card__header">
+        <span class="ai-card__label">Current Profile</span>
+      </div>
+      <div class="ai-chart-container">
+        <canvas id="radar-chart"></canvas>
+      </div>
+      <p class="ai-card__caption">
+        Multi-dimensional view of your current state.
+      </p>
+    </div>
+  </div>
+
+  {# Comparison Bar Chart #}
+  <div class="ai-card" style="margin-bottom: 24px;">
+    <div class="ai-card__header">
+      <span class="ai-card__label">Current vs Previous Comparison</span>
+    </div>
+    <div class="ai-chart-container">
+      <canvas id="comparison-chart"></canvas>
+    </div>
+    <p class="ai-card__caption">
+      See how your current scores compare to your last evaluation.
+    </p>
+  </div>
+
+  {# Anomaly Detection #}
+  <div class="ai-card">
+    <div class="ai-card__header">
+      <span class="ai-card__label">Anomaly Detection</span>
+    </div>
+    <div id="anomaly-container" class="ai-anomaly-list">
+      <p class="ai-text-muted" style="color: var(--ai-text-muted); font-size: 12px;">
+        No anomalies detected in recent data.
+      </p>
+    </div>
+  </div>
+</section>
+
+{# Initialization Script #}
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+  // Initialize visualization system
+  await WallsVisualizations.init();
+  
+  // Create 3D visualizations
+  await Promise.all([
+    WallsVisualizations.createPointCloud('point-cloud-canvas'),
+    WallsVisualizations.createHyperplane('hyperplane-canvas'),
+    WallsVisualizations.createMentalSphere('mental-sphere-canvas')
+  ]);
+  
+  // Create 2D charts
+  await Promise.all([
+    WallsVisualizations.createRadarChart('radar-chart'),
+    WallsVisualizations.createTrendChart('trend-chart'),
+    WallsVisualizations.createComparisonChart('comparison-chart')
+  ]);
+  
+  // Update meters when scores change
+  window.addEventListener('walls:scores-updated', (e) => {
+    const scores = e.detail;
+    updateMeters(scores);
+  });
+  
+  // Initial meter update
+  updateMeters(WallsVisualizations.getScores());
+  
+  // Toggle button handlers
+  document.querySelectorAll('.ai-card__toggle').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const target = e.target.dataset.toggle;
+      const container = document.getElementById(target + '-container');
+      if (container) {
+        container.style.display = container.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+  });
+});
+
+function updateMeters(scores) {
+  const maxScore = 30;
+  
+  // Stress
+  const stressVal = scores.stress || 0;
+  document.getElementById('meter-stress-value').textContent = stressVal.toFixed(1);
+  document.getElementById('meter-stress-fill').style.width = `${(stressVal / maxScore) * 100}%`;
+  
+  // Depression
+  const depVal = scores.depression || 0;
+  document.getElementById('meter-depression-value').textContent = depVal.toFixed(1);
+  document.getElementById('meter-depression-fill').style.width = `${(depVal / maxScore) * 100}%`;
+  
+  // Anxiety
+  const anxVal = scores.anxiety || 0;
+  document.getElementById('meter-anxiety-value').textContent = anxVal.toFixed(1);
+  document.getElementById('meter-anxiety-fill').style.width = `${(anxVal / maxScore) * 100}%`;
+  
+  // Sleep
+  const sleepVal = scores.sleep || 0;
+  document.getElementById('meter-sleep-value').textContent = sleepVal.toFixed(1);
+  document.getElementById('meter-sleep-fill').style.width = `${(sleepVal / maxScore) * 100}%`;
+  
+  // Check for anomalies
+  checkAnomalies(scores);
+}
+
+function checkAnomalies(scores) {
+  const container = document.getElementById('anomaly-container');
+  const anomalies = [];
+  
+  if (scores.stress > 20) {
+    anomalies.push({ type: 'warning', text: 'Elevated stress levels detected' });
+  }
+  if (scores.depression > 15) {
+    anomalies.push({ type: 'alert', text: 'Depression index above threshold' });
+  }
+  if (scores.anxiety > 18) {
+    anomalies.push({ type: 'warning', text: 'Heightened anxiety signals' });
+  }
+  if (scores.sleep < 5) {
+    anomalies.push({ type: 'info', text: 'Sleep quality may need attention' });
+  }
+  
+  if (anomalies.length > 0) {
+    container.innerHTML = anomalies.map(a => `
+      <span class="ai-anomaly ai-anomaly--${a.type === 'alert' ? '' : a.type}">
+        ${a.text}
+      </span>
+    `).join(' ');
+  } else {
+    container.innerHTML = '<p style="color: var(--ai-text-muted); font-size: 12px;">No anomalies detected.</p>';
+  }
+}
+</script>
+

@@ -1,0 +1,613 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome, Saksham Singh!</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #3d87c7; /* Blue Background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Ensure full viewport height */
+    }
+    .green-background {
+  background-color: #3D85C6; /* Blue Background */
+  padding: 20px;
+  display: block; /* Display as Block Element */
+  width: 100%; /* Occupy Full Width */
+  padding: 10px;
+  margin-top: 40px; /* Add Margin to Separate from Previous Elements */
+  box-sizing: border-box; /* Include Padding in Width Calculation */
+  position: absolute; /* Position absolutely */
+  bottom: -400px; /* Align to bottom of the viewport */
+  left: 0; /* Align to left edge of the viewport */
+
+}
+    /* Pseudo-element for background image */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("{{ url_for('static', filename='images/House.png') }}"); /* Background image URL */
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px); /* Apply blur effect */
+      z-index: -1; /* Place behind other content */
+    }
+
+    /* Blue tint overlay */
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-color: rgba(69, 190, 254, 0.5); /* Semi-transparent blue color */
+      z-index: -1; /* Place behind other content */
+    }
+
+    .menu-button {
+      position: fixed;
+      top: 15px;
+      left: 20px;
+      cursor: pointer;
+      color: #3D4756; /* Deep Blue Color */
+      font-size: 24px;
+      z-index: 1; /* Ensure the button is above the taskbar */
+    }
+
+    .taskbar {
+      position: fixed;
+      top: 0;
+      left: -200px; /* Initial position outside the viewport */
+      width: 200px;
+      height: 100%;
+      background-color: #ffffff; /* White Background */
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+      transition: left 0.3s ease-in-out;
+      z-index: 1; /* Ensure the taskbar is behind the button */
+      overflow: hidden; /* Hide potential scrollbar */
+      display: grid;
+      grid-template-columns: 20% 60%;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    .lines {
+      display: block;
+      margin: 8px 0;
+    }
+
+    .line {
+      height: 3px;
+      width: 30px;
+      background-color: #3D4756; /* Deep Blue Color */
+      margin: 5px 0;
+    }
+
+    .container {
+      margin-top: 100px;
+      width: 80%;
+      background-color: #F6F4F4; /* White Container Background */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333333; /* Dark Text Color */
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px; /* Larger Font Size */
+    }
+
+    .section-divider {
+      width: 100%;
+      height: 2px;
+      background-color: #787987; /* Light Gray Line */
+      margin: 20px 0;
+    }
+
+    .section-title {
+      margin-bottom: 10px;
+      font-size: 35px; /* Larger Font Size */
+    }
+
+    .activities,
+    .goals,
+    .active-links {
+      margin-top: 20px;
+    }
+
+    .input-field {
+      width: calc(100% - 32px); /* Adjusted width */
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #787987; /* Light Gray Outline */
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 16px; /* Larger Font Size */
+      color: #333333; /* Dark Text Color */
+    }
+
+    .list-container {
+      width: calc(100% - 32px); /* Adjusted width */
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #787987; /* Light Gray Outline */
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 16px; /* Larger Font Size */
+      color: #333333; /* Dark Text Color */
+    }
+
+    .list-item {
+      padding: 10px;
+      border-bottom: 1px solid #787987; /* Light Gray Bottom Border */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 18px; /* Larger Font Size */
+      color: #001c55; /* Medium Gray Text Color */
+      position: relative; /* Added for positioning thin gray lines */
+    }
+
+    .list-item:before,
+    .list-item:after {
+      content: "";
+      position: absolute;
+      width: calc(100% - 20px); /* Adjusted width */
+      height: 1px;
+      background-color: #787987; /* Light Gray Line */
+    }
+
+    .list-item:before {
+      top: 0;
+    }
+
+    .list-item:after {
+      bottom: 0;
+    }
+
+    .list-item:last-child {
+      border-bottom: none;
+    }
+
+    .delete-button {
+      color: red; /* Red Text Color */
+      cursor: pointer;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .checkbox::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #333333; /* Dark Gray Border */
+      border-radius: 4px;
+      background-color: transparent;
+    }
+
+    .checkbox:checked::after {
+      content: '\\2713'; /* Checkmark Unicode */
+      display: block;
+      width: 100%;
+      height: 100%;
+      color: #333333; /* Dark Gray Checkmark Color */
+      font-size: 16px; /* Adjusted Checkmark Size */
+      text-align: center;
+      line-height: 18px; /* Center Checkmark */
+    }
+
+    /* Button Styles */
+    .button {
+      background-color: #7D5A65; /* Blue Background */
+      border: none;
+      color: white;
+      padding: 10px 24px;
+      margin-top: 10px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin-right: 20px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .button:hover {
+      background-color: #2B688F; /* Darker shade on hover */
+    }
+
+    /* Timer Styles */
+    .timer {
+      display: inline-block;
+      margin-right: 20px;
+      font-size: 16px;
+    }
+    .button2 {
+      background-color: transparent;
+      border: none;
+      color: black;
+      padding: 10px 24px;
+      margin-top: 10px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin-right: 20px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .gray-box {
+  background-color: #7D5A65; /* Gray Background */
+  padding: 20px; /* Adjust padding as needed */
+  border-radius: 5px; /* Rounded corners */
+  border: 1px solid #787987; /* Border color and thickness */
+}
+
+
+  </style>
+</head>
+<body>
+
+<!-- Menu Button -->
+<div class="menu-button" onclick="toggleTaskbar()">
+  <div class="lines">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+  </div>
+</div>
+<div class="taskbar2">
+  <div class="nav-buttons">
+    <span class="material-symbols-outlined" style="font-size:40px; color:white">
+      home
+    </span>
+    <button onclick="leave3()">Home</button>
+    <span class="material-symbols-outlined" style="font-size:40px; color:white">
+      group
+    </span>
+    <button onclick="leave13()">Socialization</button>
+    <span class="material-symbols-outlined" style="font-size:40px; color:white">
+      sentiment_neutral
+    </span>
+    <button onclick="leave4()">Survey</button>
+    <span class="material-symbols-outlined" style="font-size:40px; color:white">
+      directions_run
+    </span>
+    <button onclick="leave5()">Exercise</button>
+    <span class="material-symbols-outlined" style="font-size:40px; color:white">
+      calendar_month
+    </span>
+    <button onclick="leave12()">Calendar</button>
+    <span class="material-symbols-outlined" style="font-size:40px; color:white">
+      menu_book
+    </span>
+    <button onclick="leave2()">Philosophies</button>
+    <span class="material-symbols-outlined" style="font-size:40px; color:white">
+      local_hospital
+    </span>
+    <button onclick="leave20()">Additional aid</button>
+  </div>
+  <img class="logo" src="{{ url_for('static', filename='images/WallsLogo2.PNG') }}" alt="Walls Logo">
+</div>
+<style>
+    .taskbar {
+      position: fixed;
+      top: 0;
+      left: -200px; /* Initial position outside the viewport */
+      width: 200px;
+      height: 100%;
+      background-color: #F6F4F4; /* White Background */
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+      transition: left 0.3s ease-in-out;
+      z-index: 1; /* Ensure the taskbar is behind the button */
+      overflow: hidden; /* Hide potential scrollbar */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+  .taskbar2 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: #3D85C6; /* Blue Background */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .taskbar2 .nav-buttons button {
+      background-color: transparent;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .taskbar2 .nav-buttons span {
+      margin-left: 40px;
+    }
+
+    .taskbar2 .nav-buttons button:hover {
+      
+      text-decoration: underline;
+    }
+
+    .taskbar2 .nav-buttons button:last-child {
+      margin-right: 0;
+    }
+
+    .logo {
+            width: 200px;
+            height: 50px;
+            margin-right: 20px;
+        }
+
+    .taskbar2::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      background-color: #787987; /* Gray line at the bottom */
+    }
+    headers {
+      font-size:30px;
+      color: #293553;
+    }
+
+</style>
+
+<!-- Taskbar -->
+<div class="taskbar">
+  <span class="material-symbols-outlined" style="font-size:50px">
+    home
+  </span>
+  <button class="button2" onclick="leave3()">Home</button>
+  <span class="material-symbols-outlined" style="font-size:50px">
+    sentiment_neutral
+  </span>
+  <button class="button2" onclick="leave4()">Survey</button>
+  <span class="material-symbols-outlined" style="font-size:50px">
+    directions_run
+  </span>
+  <button class="button2" onclick="leave5()">Exercise</button>
+  <span class="material-symbols-outlined" style="font-size:50px">
+    calendar_month
+  </span>
+  <button class="button2" onclick="leave12()">Calendar</button>
+  <span class="material-symbols-outlined" style="font-size:50px">
+    menu_book
+  </span>
+  <button class="button2" onclick="leave2()">Philosophies</button>
+  <span class="material-symbols-outlined" style="font-size:50px">
+    local_hospital
+  </span>
+  <button class="button2" onclick="leave20()">Additional aid</button>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    function leave2() {
+        window.location.href = "{{ url_for('legacy.philo') }}"
+    }
+    function leave5() {
+        window.location.href = "{{ url_for('legacy.exercise') }}"
+    }
+    function leave3() {
+        window.location.href = "{{ url_for('legacy.thome') }}"
+    }
+    function leave20() {
+        window.location.href = "{{ url_for('legacy.aid') }}"
+    }
+    function leave4() {
+        window.location.href = "{{ url_for('legacy.survey') }}"
+    }
+    function leave12() {
+        window.location.href = "{{ url_for('legacy.calendar') }}"
+    }
+    function leave13() {
+        window.location.href = "{{ url_for('legacy.social') }}"
+    }
+  </script>
+</div>
+
+
+<div class="container">
+  <h1 class = "headers">Welcome, Sam!</h1>
+
+
+  <!-- Timer -->
+  
+
+  <div class="section-divider"></div>
+
+  <div class="activities">
+    <h2 class="section-title">Activities:</h2>
+    <input type="text" id="activity-input" class="input-field" placeholder="Enter activity...">
+    <button class="button" onclick="submitActivity()">Add</button>
+      <ul class="list-container" id="activity-list">
+    
+      <!-- Activities will be dynamically added here -->
+    </ul>
+  </div>
+
+  <div class="section-divider"></div>
+
+
+  <div class="goals">
+    <h2 class="section-title">Goals:</h2>
+    <input type="text" id="goal-input" class="input-field" placeholder="Enter goal...">
+    <button class="button" onclick="submitGoal()">Add</button>
+    
+    <ul class="goal-list list-container" id="goal-list">
+      <!-- Goals will be dynamically added here -->
+    </ul>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="active-links">
+    <h2 class="section-title">Active Links:</h2>
+    <input type="text" id="link-input" class="input-field" placeholder="Enter link...">
+    <input type="text" id="link-details-input" class="input-field" placeholder="Enter link details...">
+    <button class="button" onclick="submitLink()">Add</button>
+    <ul class="link-list list-container" id="link-list">
+      <!-- Active links will be dynamically added here -->
+    </ul>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Take Survey Button -->
+  <button class="button" onclick="leave()">Take Survey</button>
+  <div class="timer" id="timer"></div>
+  <script>
+    function leave() {
+        window.location.href = "{{ url_for('legacy.survey') }}"
+    }
+  </script>
+</div>
+
+
+
+<script>
+  // Timer Countdown
+  const timerElement = document.getElementById('timer');
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + 7); // Add 7 days
+
+  function updateTimer() {
+
+    const currentDate = new Date();
+    const timeDifference = targetDate.getTime() - currentDate.getTime();
+
+    const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+    timerElement.textContent = `Recommended Time Left: ${days} days ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+    if (timeDifference <= 0) {
+      clearInterval(timerInterval);
+      timerElement.textContent = 'Recommended Time Left: Time Up!';
+    }
+  }
+
+  updateTimer(); // Call initially to prevent delay in showing timer
+  const timerInterval = setInterval(updateTimer, 1000);
+  
+  // Submit Activity
+  function submitActivity() {
+
+    const activityInput = document.getElementById('activity-input');
+    const activityList = document.getElementById('activity-list');
+    const activityText = activityInput.value.trim();
+    if (activityText !== '') {
+      addToList(activityList, activityText);
+      activityInput.value = '';
+    }
+  }
+
+  // Submit Goal
+  function submitGoal() {
+    const goalInput = document.getElementById('goal-input');
+    const goalList = document.getElementById('goal-list');
+    const goalText = goalInput.value.trim();
+    if (goalText !== '') {
+      addToList(goalList, goalText, true); // Add checkbox for goal
+      goalInput.value = '';
+    }
+  }
+
+  // Submit Link
+  function submitLink() {
+    const linkInput = document.getElementById('link-input');
+    const linkDetailsInput = document.getElementById('link-details-input');
+    const linkList = document.getElementById('link-list');
+    const linkText = linkInput.value.trim();
+    const linkDetailsText = linkDetailsInput.value.trim();
+    if (linkText !== '') {
+      addToList(linkList, linkText + ' - ' + linkDetailsText); // Include link details
+      linkInput.value = '';
+      linkDetailsInput.value = '';
+    }
+  }
+
+  // Function to add item to list
+  function addToList(list, text, isGoal = false) {
+    const listItem = document.createElement('li');
+    listItem.classList.add('list-item');
+    listItem.textContent = text;
+
+    const deleteButton = document.createElement('span');
+    deleteButton.classList.add('delete-button');
+    deleteButton.textContent = 'X';
+    deleteButton.addEventListener('click', function() {
+      listItem.remove();
+    });
+    listItem.appendChild(deleteButton);
+
+    if (isGoal) {
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.classList.add('checkbox');
+      checkbox.addEventListener('change', function() {
+        if (checkbox.checked) {
+          confetti();
+          listItem.remove();
+        }
+      });
+      const checkboxContainer = document.createElement('div');
+      checkboxContainer.classList.add('checkbox-container');
+      checkboxContainer.appendChild(checkbox);
+      listItem.prepend(checkboxContainer);
+    }
+
+    list.appendChild(listItem);
+  }
+</script>
+<script>
+  function toggleTaskbar() {
+    const taskbar = document.querySelector('.taskbar');
+    const newLeft = taskbar.style.left === '0px' ? '-200px' : '0px';
+    taskbar.style.left = newLeft;
+  }
+</script>
+
+</body>
+</html>

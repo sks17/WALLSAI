@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #3d87c7; /* Blue Background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Ensure full viewport height */
+    }
+    /* Pseudo-element for background image */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 800%;
+      background-image: url("{{ url_for('static', filename='images/House.png') }}"); /* Background image URL */
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px); /* Apply blur effect */
+      z-index: -1; /* Place behind other content */
+    }
+
+    /* Blue tint overlay */
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-color: rgba(69, 190, 254, 0.5); /* Semi-transparent blue color */
+      z-index: -1; /* Place behind other content */
+    }
+
+        .menu-button {
+            position: fixed;
+            top: 2%;
+            left: 2%;
+            cursor: pointer;
+            color: #F6F4F4; /* White Color */
+            font-size: 2vw;
+            z-index: 2; /* Ensure the button is above the taskbar */
+        }
+
+        .survey-container {
+            max-width: 80%;
+            width: 90%;
+            padding: 5%;
+            background-color: #F6F4F4; /* White Background */
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20%;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        h1, p {
+            margin-bottom: 20px;
+            background-color: #F6F4F4; /* White Background */
+            padding: 10px;
+            border-radius: 5px;
+            color: #808080; /* Gray Color */
+        }
+
+        .submit-button {
+            background-color: #7D5A65; /* Light Gray Background */
+            color: #808080; /* Gray Text Color */
+            padding: 15px;
+            font-size: 2vw;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+            margin-top: 20px;
+            display: block; /* Buttons on top of each other */
+            width: 100%; /* Full width */
+        }
+
+        .submit-button:hover {
+            background-color: #d0d0d0; /* Slightly Darker Gray on Hover */
+        }
+
+        .error-message {
+            color: #FF0000; /* Red Text Color */
+            margin-top: 1vw;
+            font-size: 1.2vw;
+        }
+
+        .description {
+            margin-top: 1vw;
+            font-size: 1.2vw;
+        }
+
+        .logo {
+            position: fixed;
+            top: 2%;
+            right: 2%;
+            max-width: 10%;
+            z-index: 3; /* Ensure the logo is above the taskbar */
+        }
+
+        .question-container {
+            overflow-y: auto;
+            max-height: 80vh; /* Adjusted to allow scrolling */
+        }
+        .sq-radio {
+        display: block;
+        position: relative;
+        padding-left: 12px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 22px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        }
+        .question {
+            margin-bottom: 2vw;
+            color: #333333; /* Dark Text Color */
+            font-weight: bold;
+        }
+
+        .question input {
+            margin-right: 1vw;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #293553; /* Gray Color */
+            margin: 1.5vw 0;
+        }
+        .est {
+                Color: #293553;
+            }
+    </style>
+    <title>Wellness Check</title>
+</head>
+<body>
+    <script>
+        function toggleTaskbar() {
+            const taskbar = document.querySelector('.taskbar');
+            const newLeft = taskbar.style.left === '0px' ? '-200px' : '0px';
+            taskbar.style.left = newLeft;
+        }
+
+        function submitSurvey() {
+            // Gather answers
+            const answers = [];
+            const questions = document.querySelectorAll('.question');
+            
+            questions.forEach((question, index) => {
+                const selectedOption = question.querySelector('input:checked').value;
+                // Categorize answers as "yes" or "no"
+                answers.push((selectedOption === 'agree' || selectedOption === 'strongly-agree') ? 'yes' : 'no');
+            });
+
+            // Check if all questions are answered
+            const errorMessage = document.getElementById('error-message');
+            if (answers.length !== 24) {
+                errorMessage.textContent = 'Please answer all questions before submitting.';
+                return;
+            }
+
+            // Log the results
+            fetch('/process-data', { 
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/json'
+                }, 
+                body: JSON.stringify({answers: answers}) 
+                }) 
+                .then(response => response.text()) 
+                .then(result => { 
+                console.log(result); 
+                }) 
+                .catch(error => { 
+                console.error('Error:', error); 
+            }); 
+            console.log('Survey Results:');
+            answers.forEach((answer, index) => {
+                console.log(`Question ${index + 1}: ${answer}`);
+            });
+            window.location.href = "{{ url_for('legacy.home2') }}"
+
+            // Reset error message
+            errorMessage.textContent = '';
+            
+        }
+    </script>
+
+    <!-- Menu Button -->
+    <div class="menu-button" onclick="toggleTaskbar()">
+        <div class="lines">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <!-- You can add buttons or content to the taskbar here -->
+    </div>
+
+
+    <!-- Survey Container -->
+    <div class="survey-container">
+        <h1 class = "est">Wellness Check</h1>
+        <p>Please answer these questions as truthfully as you can, as it will help us in our process of helping you. In the past week...</p>
+        <styles>
+
+        </styles>
+        <!-- Questions -->
+        <div class="question-container">
+            <!-- Question 1 -->
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you felt more nervous or nervous more often than usual?</p>
+                <input type="radio" name="question1" value="no"> Strongly Disagree
+                <input type="radio" name="question1" value="no"> Slightly Disagree
+                <input type="radio" name="question1" value="no"> Neutral
+                <input type="radio" name="question1" value="agree"> Slightly Agree
+                <input type="radio" name="question1" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+
+            <!-- Question 2 -->
+            <div class="question">
+                <p>Have you felt panicked more often than usual?</p>
+                <input type="radio" name="question2" value="no"> Strongly Disagree
+                <input type="radio" name="question2" value="no"> Slightly Disagree
+                <input type="radio" name="question2" value="no"> Neutral
+                <input type="radio" name="question2" value="agree"> Slightly Agree
+                <input type="radio" name="question2" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you found yourself breathing rapidly for no apparent reason?</p>
+                <input type="radio" name="question3" value="no"> Strongly Disagree
+                <input type="radio" name="question3" value="no"> Slightly Disagree
+                <input type="radio" name="question3" value="no"> Neutral
+                <input type="radio" name="question3" value="agree"> Slightly Agree
+                <input type="radio" name="question3" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+
+            <!-- Questions 3-24 -->
+            <div class="question">
+                <p>Have you found yourself breaking into cold sweats for no apparent reason?</p>
+                <input type="radio" name="question4" value="no"> Strongly Disagree
+                <input type="radio" name="question4" value="no"> Slightly Disagree
+                <input type="radio" name="question4" value="no"> Neutral
+                <input type="radio" name="question4" value="agree"> Slightly Agree
+                <input type="radio" name="question4" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you had trouble concentrating?</p>
+                <input type="radio" name="question5" value="no"> Strongly Disagree
+                <input type="radio" name="question5" value="no"> Slightly Disagree
+                <input type="radio" name="question5" value="no"> Neutral
+                <input type="radio" name="question5" value="agree"> Slightly Agree
+                <input type="radio" name="question5" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you had trouble sleeping?</p>
+                <input type="radio" name="question6" value="no"> Strongly Disagree
+                <input type="radio" name="question6" value="no"> Slightly Disagree
+                <input type="radio" name="question6" value="no"> Neutral
+                <input type="radio" name="question6" value="agree"> Slightly Agree
+                <input type="radio" name="question6" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you had trouble working in general?</p>
+                <input type="radio" name="question7" value="no"> Strongly Disagree
+                <input type="radio" name="question7" value="no"> Slightly Disagree
+                <input type="radio" name="question7" value="no"> Neutral
+                <input type="radio" name="question7" value="agree"> Slightly Agree
+                <input type="radio" name="question7" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you felt excessively hopeless?</p>
+                <input type="radio" name="question8" value="no"> Strongly Disagree
+                <input type="radio" name="question8" value="no"> Slightly Disagree
+                <input type="radio" name="question8" value="no"> Neutral
+                <input type="radio" name="question8" value="agree"> Slightly Agree
+                <input type="radio" name="question8" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you felt angry towards things you don't usually feel angry about?</p>
+                <input type="radio" name="question9" value="no"> Strongly Disagree
+                <input type="radio" name="question9" value="no"> Slightly Disagree
+                <input type="radio" name="question9" value="no"> Neutral
+                <input type="radio" name="question9" value="agree"> Slightly Agree
+                <input type="radio" name="question9" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you found yourself reacting more strongly towards things you consider meaningless?</p>
+                <input type="radio" name="question10" value="no"> Strongly Disagree
+                <input type="radio" name="question10" value="no"> Slightly Disagree
+                <input type="radio" name="question10" value="no"> Neutral
+                <input type="radio" name="question10" value="agree"> Slightly Agree
+                <input type="radio" name="question10" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have your eating habits drastically changed with no apparent external cause?</p>
+                <input type="radio" name="question11" value="no"> Strongly Disagree
+                <input type="radio" name="question11" value="no"> Slightly Disagree
+                <input type="radio" name="question11" value="no"> Neutral
+                <input type="radio" name="question11" value="agree"> Slightly Agree
+                <input type="radio" name="question11" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you had suicidal thoughts?</p>
+                <input type="radio" name="question12" value="no"> Strongly Disagree
+                <input type="radio" name="question12" value="no"> Slightly Disagree
+                <input type="radio" name="question12" value="no"> Neutral
+                <input type="radio" name="question12" value="agree"> Slightly Agree
+                <input type="radio" name="question12" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you felt excessive fatigue with no apparent external cause?</p>
+                <input type="radio" name="question13" value="no"> Strongly Disagree
+                <input type="radio" name="question13" value="no"> Slightly Disagree
+                <input type="radio" name="question13" value="no"> Neutral
+                <input type="radio" name="question13" value="agree"> Slightly Agree
+                <input type="radio" name="question13" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you had close interpersonal connections?</p>
+                <input type="radio" name="question14" value="no"> Strongly Disagree
+                <input type="radio" name="question14" value="no"> Slightly Disagree
+                <input type="radio" name="question14" value="no"> Neutral
+                <input type="radio" name="question14" value="agree"> Slightly Agree
+                <input type="radio" name="question14" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you spent far more time on social media than usual for no apparent external reason?</p>
+                <input type="radio" name="question15" value="no"> Strongly Disagree
+                <input type="radio" name="question15" value="no"> Slightly Disagree
+                <input type="radio" name="question15" value="no"> Neutral
+                <input type="radio" name="question15" value="agree"> Slightly Agree
+                <input type="radio" name="question15" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you gained a significant amount of weight?</p>
+                <input type="radio" name="question16" value="no"> Strongly Disagree
+                <input type="radio" name="question16" value="no"> Slightly Disagree
+                <input type="radio" name="question16" value="no"> Neutral
+                <input type="radio" name="question16" value="agree"> Slightly Agree
+                <input type="radio" name="question16" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you wanted to hold onto material possessions you would usually discard?</p>
+                <input type="radio" name="question17" value="no"> Strongly Disagree
+                <input type="radio" name="question17" value="no"> Slightly Disagree
+                <input type="radio" name="question17" value="no"> Neutral
+                <input type="radio" name="question17" value="agree"> Slightly Agree
+                <input type="radio" name="question17" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you been more introverted than usual?</p>
+                <input type="radio" name="question18" value="no"> Strongly Disagree
+                <input type="radio" name="question18" value="no"> Slightly Disagree
+                <input type="radio" name="question18" value="no"> Neutral
+                <input type="radio" name="question18" value="agree"> Slightly Agree
+                <input type="radio" name="question18" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you repeatedly remembered something stressful?</p>
+                <input type="radio" name="question19" value="no"> Strongly Disagree
+                <input type="radio" name="question19" value="no"> Slightly Disagree
+                <input type="radio" name="question19" value="no"> Neutral
+                <input type="radio" name="question19" value="agree"> Slightly Agree
+                <input type="radio" name="question19" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you had or remembered more nightmares than usual?</p>
+                <input type="radio" name="question20" value="no"> Strongly Disagree
+                <input type="radio" name="question20" value="no"> Slightly Disagree
+                <input type="radio" name="question20" value="no"> Neutral
+                <input type="radio" name="question20" value="agree"> Slightly Agree
+                <input type="radio" name="question20" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you avoided activities you enjoy?</p>
+                <input type="radio" name="question21" value="no"> Strongly Disagree
+                <input type="radio" name="question21" value="no"> Slightly Disagree
+                <input type="radio" name="question21" value="no"> Neutral
+                <input type="radio" name="question21" value="agree"> Slightly Agree
+                <input type="radio" name="question21" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you been feeling more pessimistic than usual?</p>
+                <input type="radio" name="question22" value="no"> Strongly Disagree
+                <input type="radio" name="question22" value="no"> Slightly Disagree
+                <input type="radio" name="question22" value="no"> Neutral
+                <input type="radio" name="question22" value="agree"> Slightly Agree
+                <input type="radio" name="question22" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you lost your concentration faster than usual?</p>
+                <input type="radio" name="question23" value="no"> Strongly Disagree
+                <input type="radio" name="question23" value="no"> Slightly Disagree
+                <input type="radio" name="question23" value="no"> Neutral
+                <input type="radio" name="question23" value="agree"> Slightly Agree
+                <input type="radio" name="question23" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+            <div class="question">
+                <p>Have you blamed yourself more than usual?</p>
+                <input type="radio" name="question24" value="no"> Strongly Disagree
+                <input type="radio" name="question24" value="no"> Slightly Disagree
+                <input type="radio" name="question24" value="no"> Neutral
+                <input type="radio" name="question24" value="agree"> Slightly Agree
+                <input type="radio" name="question24" value="strongly-agree"> Strongly Agree
+            </div>
+            <div class="divider"></div>
+
+            <!-- Submit Button -->
+            <button class="submit-button" onclick="submitSurvey()">Submit</button>
+
+            <!-- Error Message -->
+            <div id="error-message" class="error-message"></div>
+
+            <!-- Description -->
+            <div class="description">
+                Please consult a medical expert for any serious or persistent changes in your health and mental state. "Walls," as a service, may not be medically accurate, and it may not provide you with the resources you need. It is merely intended to provide simple solutions for those facing the beginnings of potential problems.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+# Python venv
+.venv/
+venv/
+
+# Model binaries
+models/*.pt
+models/*.bin
+models/*.pth
+models/checkpoints/
+
+# Firebase secrets
+*.json
+firebase_credentials.json
+serviceAccountKey.json
+
+# Bytecode
+__pycache__/
+*.pyc
+
+# Local data
+*.db
+*.sqlite3
+debug_logs/
+
+# OS junk
+.DS_Store
+Thumbs.db

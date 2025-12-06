@@ -1,0 +1,736 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | WALLS{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ai-visuals.css') }}">
+
+<!-- Firebase Configuration -->
+<script>
+window._FIREBASE_API_KEY = "{{ FIREBASE_API_KEY }}";
+window._FIREBASE_AUTH_DOMAIN = "{{ FIREBASE_AUTH_DOMAIN }}";
+window._FIREBASE_PROJECT_ID = "{{ FIREBASE_PROJECT_ID }}";
+window._FIREBASE_APP_ID = "{{ FIREBASE_APP_ID }}";
+window.ENV_FIREBASE_API_KEY = window._FIREBASE_API_KEY;
+window.ENV_FIREBASE_AUTH_DOMAIN = window._FIREBASE_AUTH_DOMAIN;
+window.ENV_FIREBASE_PROJECT_ID = window._FIREBASE_PROJECT_ID;
+window.ENV_FIREBASE_APP_ID = window._FIREBASE_APP_ID;
+// User ID from session (for fallback)
+window.SESSION_USER_ID = "{{ user_id }}";
+</script>
+<script type="module" src="{{ url_for('static', filename='js/firebase-init.js') }}"></script>
+{% endblock %}
+
+{% block header_actions %}
+  <a class="btn btn-ghost" href="{{ url_for('frontend.notes') }}">Notes</a>
+  <a class="btn btn-ghost" href="{{ url_for('frontend.mindfulness') }}">Resources</a>
+  <a class="btn btn-ghost" href="{{ url_for('frontend.survey') }}">New Survey</a>
+{% endblock %}
+
+{% block content %}
+{# ========================================================================
+   Section A: Welcome Hero (Calm Aesthetic)
+   ======================================================================== #}
+<section class="hero fade-in">
+  <h1 data-animate="chars">Welcome back, {{ user_email.split('@')[0] }}</h1>
+  <p class="fade-body">Here's your mental wellness journey at a glance.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="{{ url_for('frontend.survey') }}">Take New Survey</a>
+    <button class="btn btn-ghost" onclick="WallsVisualizations.refreshData()">Refresh Data</button>
+  </div>
+</section>
+
+{# ========================================================================
+   Disclaimer Banner
+   ======================================================================== #}
+<div class="dashboard-disclaimer" style="max-width: 820px; margin: 0 auto; padding: 0 16px;">
+  <div class="disclaimer-banner">
+    <p>
+      <span class="disclaimer-icon">ℹ️</span>
+      <strong>For reflection only:</strong> The insights below are based on your survey responses and are provided 
+      for personal awareness. They do not constitute medical advice, diagnosis, or treatment recommendations.
+    </p>
+  </div>
+</div>
+
+{# ========================================================================
+   Section B: Quick Stats (Calm Cards)
+   ======================================================================== #}
+<section class="journey-section fade-delayed" aria-label="Quick statistics">
+  <div class="soft-card">
+    <div class="card-header">
+      <h2 class="heading" data-animate="chars">Your Progress Overview</h2>
+      <p class="muted fade-body">A snapshot of your mental health journey.</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value" id="stat-stress">--</span>
+          <span class="stat-label">Stress Level</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 15s1.5-2 4-2 4 2 4 2M9 9h.01M15 9h.01"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value" id="stat-depression">--</span>
+          <span class="stat-label">Depression Index</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #00d4aa, #00f5c4);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value" id="stat-anxiety">--</span>
+          <span class="stat-label">Anxiety Signal</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #60a5fa);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value" id="stat-sleep">--</span>
+          <span class="stat-label">Sleep Quality</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ========================================================================
+   Section C: AI Deep Visualization Zone (Dark Tech Aesthetic)
+   ======================================================================== #}
+{% include 'ai_section.html' %}
+
+{# ========================================================================
+   Section D: Your Emotional Trajectory (Calm Aesthetic)
+   ======================================================================== #}
+<section class="journey-section fade-delayed" aria-label="Emotional trajectory analysis">
+  <div class="soft-card">
+    <div class="card-header">
+      <h2 class="heading" data-animate="chars">Emotional Trajectory</h2>
+      <p class="muted fade-body">Analysis of patterns and changes over time.</p>
+    </div>
+    
+    <div class="trajectory-insights" id="trajectory-insights">
+      <div class="insight-card">
+        <h3 class="insight-title">Moving Averages</h3>
+        <p class="insight-text" id="insight-moving-avg">
+          Analyzing your recent trends...
+        </p>
+      </div>
+      
+      <div class="insight-card">
+        <h3 class="insight-title">Pattern Detection</h3>
+        <p class="insight-text" id="insight-patterns">
+          Looking for recurring patterns...
+        </p>
+      </div>
+      
+      <div class="insight-card">
+        <h3 class="insight-title">Recommendations</h3>
+        <p class="insight-text" id="insight-recommendations">
+          Personalized guidance will appear here after more data is collected.
+        </p>
+      </div>
+    </div>
+    
+    <div class="insight-disclaimer">
+      <p class="muted small">
+        <strong>Note:</strong> This analysis is for informational purposes only and does not constitute medical advice. 
+        Please consult a healthcare professional for proper diagnosis and treatment.
+      </p>
+    </div>
+  </div>
+</section>
+
+{# ========================================================================
+   Section D.5: Intensity Trends (For Slider Questions)
+   ======================================================================== #}
+<section class="journey-section fade-delayed" aria-label="Intensity trends">
+  <div class="soft-card">
+    <div class="card-header">
+      <h2 class="heading">Intensity Trends</h2>
+      <p class="muted">Track how your emotional intensity has changed over time.</p>
+    </div>
+    
+    <div class="intensity-charts-grid">
+      <div class="intensity-chart-container">
+        <h3 class="chart-title">Intensity Over Time</h3>
+        <div class="chart-wrapper" style="height: 250px;">
+          <canvas id="intensity-trend-chart"></canvas>
+        </div>
+      </div>
+      
+      <div class="intensity-chart-container">
+        <h3 class="chart-title">Response Distribution</h3>
+        <div class="chart-wrapper" style="height: 250px;">
+          <canvas id="intensity-histogram-chart"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="intensity-legend">
+      <p class="muted small">
+        <strong>About intensity questions:</strong> Some survey questions use 0-100 sliders to capture 
+        emotional intensity more precisely than simple yes/no answers. This helps WALLS provide more 
+        nuanced insights into your wellbeing patterns.
+      </p>
+    </div>
+  </div>
+</section>
+
+{# ========================================================================
+   Section E: Evaluation History (Calm Aesthetic)
+   ======================================================================== #}
+<section class="journey-section fade-delayed" aria-label="Evaluation history">
+  <div class="soft-card">
+    <div class="card-header">
+      <h2 class="heading">Recent Evaluations</h2>
+    </div>
+    
+    <div id="history-list" class="history-list">
+      {% if history %}
+        {% for item in history|reverse %}
+          <div class="history-item">
+            <div class="history-item__main">
+              <div class="history-item__scores">
+                <span class="score-badge score-badge--stress" title="Stress">
+                  S: {{ '%.1f'|format(item.scores.stress_score if item.scores else 0) }}
+                </span>
+                <span class="score-badge score-badge--depression" title="Depression">
+                  D: {{ '%.1f'|format(item.scores.depression_score if item.scores else 0) }}
+                </span>
+                <span class="score-badge score-badge--anxiety" title="Anxiety">
+                  A: {{ '%.1f'|format(item.scores.anxiety_score if item.scores else 0) }}
+                </span>
+                <span class="score-badge score-badge--sleep" title="Sleep">
+                  Z: {{ '%.1f'|format(item.scores.sleep_quality if item.scores else 0) }}
+                </span>
+              </div>
+              <span class="history-item__prediction">
+                {{ item.prediction if item.prediction else 'Analysis complete' }}
+              </span>
+            </div>
+            <div class="history-item__meta">
+              <span class="muted small">{{ item.timestamp }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="muted">No evaluations yet. Take your first survey to see your history.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block body_extra %}
+{# ========================================================================
+   Debug Panel (Hidden by default, toggle with Ctrl+Shift+D)
+   ======================================================================== #}
+<div id="debug-panel" class="debug-panel" hidden>
+  <div class="debug-panel__header">
+    <h3>🔧 Debug Panel</h3>
+    <button onclick="toggleDebugPanel()" class="debug-close">×</button>
+  </div>
+  <div class="debug-panel__content">
+    <div class="debug-section">
+      <h4>Last Prediction Response</h4>
+      <pre id="debug-last-response">{}</pre>
+    </div>
+    <div class="debug-section">
+      <h4>Last Input Payload</h4>
+      <pre id="debug-last-input">{}</pre>
+    </div>
+    <div class="debug-section">
+      <h4>Backend Debug Info</h4>
+      <pre id="debug-backend">{}</pre>
+      <button onclick="fetchBackendDebug()" class="btn btn-ghost btn-small">Refresh Backend Debug</button>
+    </div>
+    <div class="debug-section">
+      <h4>API Status</h4>
+      <pre id="debug-status">{}</pre>
+      <button onclick="fetchApiStatus()" class="btn btn-ghost btn-small">Refresh Status</button>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/visualization.js') }}"></script>
+<script>
+// ========================================================================
+// Debug Panel Functions
+// ========================================================================
+
+let debugPanelVisible = false;
+
+function toggleDebugPanel() {
+  const panel = document.getElementById('debug-panel');
+  debugPanelVisible = !debugPanelVisible;
+  panel.hidden = !debugPanelVisible;
+  if (debugPanelVisible) {
+    fetchApiStatus();
+    fetchBackendDebug();
+  }
+}
+
+async function fetchApiStatus() {
+  try {
+    const status = await WallsAPI.getStatus();
+    document.getElementById('debug-status').textContent = JSON.stringify(status, null, 2);
+  } catch (e) {
+    document.getElementById('debug-status').textContent = `Error: ${e.message}`;
+  }
+}
+
+async function fetchBackendDebug() {
+  try {
+    const response = await fetch('/api/v2/debug');
+    if (response.status === 403) {
+      document.getElementById('debug-backend').textContent = 
+        'Debug endpoint disabled.\nSet WALLS_DEBUG=1 to enable.';
+      return;
+    }
+    const data = await response.json();
+    document.getElementById('debug-backend').textContent = JSON.stringify(data, null, 2);
+  } catch (e) {
+    document.getElementById('debug-backend').textContent = `Error: ${e.message}`;
+  }
+}
+
+// Listen for prediction events to update debug panel
+window.addEventListener('walls:prediction', (e) => {
+  document.getElementById('debug-last-response').textContent = JSON.stringify(e.detail, null, 2);
+});
+
+// Keyboard shortcut: Ctrl+Shift+D to toggle debug panel
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+    e.preventDefault();
+    toggleDebugPanel();
+  }
+});
+
+console.log('[Dashboard] Debug panel available. Press Ctrl+Shift+D to toggle.');
+
+// ========================================================================
+// Main Dashboard Functions
+// ========================================================================
+
+document.addEventListener('DOMContentLoaded', async function() {
+  // Update stat cards when scores change
+  window.addEventListener('walls:scores-updated', (e) => {
+    const scores = e.detail;
+    updateStatCards(scores);
+    updateTrajectoryInsights(scores);
+  });
+  
+  // Fetch fresh data from API
+  await loadDashboardData();
+});
+
+async function loadDashboardData() {
+  try {
+    // Fetch metrics
+    const metrics = await WallsAPI.getMetrics(WallsAPI.getUserId());
+    if (metrics.latest_scores) {
+      updateStatCards(metrics.latest_scores);
+      updateTrajectoryInsights(metrics.latest_scores);
+    }
+    if (metrics.trends) {
+      displayTrends(metrics.trends);
+    }
+    
+    // Fetch and render fresh history
+    const historyData = await WallsAPI.getHistory(WallsAPI.getUserId(), 20);
+    if (historyData.evaluations && historyData.evaluations.length > 0) {
+      renderHistoryList(historyData.evaluations);
+    }
+    
+    // Initialize intensity charts if WallsVisualizations is available
+    if (window.WallsVisualizations) {
+      await WallsVisualizations.init();
+      // Create intensity charts
+      WallsVisualizations.createIntensityChart('intensity-trend-chart');
+      WallsVisualizations.createIntensityHistogram('intensity-histogram-chart');
+    }
+    
+    console.log('[Dashboard] Data loaded successfully');
+  } catch (e) {
+    console.log('[Dashboard] Could not load data from API, using server-rendered data');
+  }
+}
+
+function renderHistoryList(evaluations) {
+  const container = document.getElementById('history-list');
+  if (!container) return;
+  
+  if (evaluations.length === 0) {
+    container.innerHTML = '<p class="muted">No evaluations yet. Take your first survey to see your history.</p>';
+    return;
+  }
+  
+  container.innerHTML = evaluations.map(item => {
+    const scores = item.scores || {};
+    const timestamp = item.timestamp ? new Date(item.timestamp).toLocaleString() : 'Unknown';
+    
+    return `
+      <div class="history-item">
+        <div class="history-item__main">
+          <div class="history-item__scores">
+            <span class="score-badge score-badge--stress" title="Stress">
+              S: ${(scores.stress_score || 0).toFixed(1)}
+            </span>
+            <span class="score-badge score-badge--depression" title="Depression">
+              D: ${(scores.depression_score || 0).toFixed(1)}
+            </span>
+            <span class="score-badge score-badge--anxiety" title="Anxiety">
+              A: ${(scores.anxiety_score || 0).toFixed(1)}
+            </span>
+            <span class="score-badge score-badge--sleep" title="Sleep">
+              Z: ${(scores.sleep_quality || 0).toFixed(1)}
+            </span>
+          </div>
+          <span class="history-item__prediction">
+            Analysis complete
+          </span>
+        </div>
+        <div class="history-item__meta">
+          <span class="muted small">${timestamp}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateStatCards(scores) {
+  document.getElementById('stat-stress').textContent = (scores.stress_score || scores.stress || 0).toFixed(1);
+  document.getElementById('stat-depression').textContent = (scores.depression_score || scores.depression || 0).toFixed(1);
+  document.getElementById('stat-anxiety').textContent = (scores.anxiety_score || scores.anxiety || 0).toFixed(1);
+  document.getElementById('stat-sleep').textContent = (scores.sleep_quality || scores.sleep || 0).toFixed(1);
+}
+
+function updateTrajectoryInsights(scores) {
+  const stress = scores.stress_score || scores.stress || 0;
+  const depression = scores.depression_score || scores.depression || 0;
+  const anxiety = scores.anxiety_score || scores.anxiety || 0;
+  const sleep = scores.sleep_quality || scores.sleep || 0;
+  
+  // Moving average insight
+  const avgInsight = document.getElementById('insight-moving-avg');
+  const overallAvg = (stress + depression + anxiety) / 3;
+  if (overallAvg < 10) {
+    avgInsight.textContent = 'Your overall mental health indicators are in a healthy range. Keep up the good work!';
+  } else if (overallAvg < 20) {
+    avgInsight.textContent = 'Your indicators show moderate levels. Consider mindfulness practices and regular breaks.';
+  } else {
+    avgInsight.textContent = 'Your indicators are elevated. We recommend reaching out to a mental health professional.';
+  }
+  
+  // Pattern insight
+  const patternInsight = document.getElementById('insight-patterns');
+  if (stress > anxiety && stress > depression) {
+    patternInsight.textContent = 'Stress appears to be your primary concern. External pressures may be affecting your wellbeing.';
+  } else if (anxiety > stress && anxiety > depression) {
+    patternInsight.textContent = 'Anxiety signals are prominent. Breathing exercises and grounding techniques may help.';
+  } else if (depression > stress && depression > anxiety) {
+    patternInsight.textContent = 'Depression indicators are elevated. Social connection and routine activities can be beneficial.';
+  } else {
+    patternInsight.textContent = 'Your indicators are relatively balanced. Continue monitoring for any changes.';
+  }
+  
+  // Recommendations
+  const recsInsight = document.getElementById('insight-recommendations');
+  const recommendations = [];
+  
+  if (sleep < 10) {
+    recommendations.push('Consider improving sleep hygiene: consistent bedtime, reduced screen time before bed.');
+  }
+  if (stress > 15) {
+    recommendations.push('Try stress-reduction techniques: deep breathing, progressive muscle relaxation.');
+  }
+  if (anxiety > 15) {
+    recommendations.push('Grounding exercises can help: focus on 5 things you can see, 4 you can hear, etc.');
+  }
+  if (depression > 12) {
+    recommendations.push('Stay connected with loved ones and maintain daily routines.');
+  }
+  
+  if (recommendations.length > 0) {
+    recsInsight.textContent = recommendations.join(' ');
+  } else {
+    recsInsight.textContent = 'Your current scores are in a healthy range. Keep up your wellness practices!';
+  }
+}
+
+function displayTrends(trends) {
+  // This would display trend arrows or indicators
+  console.log('Trends:', trends);
+}
+</script>
+
+<style>
+/* Dashboard-specific styles */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-tint);
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Trajectory insights */
+.trajectory-insights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.insight-card {
+  padding: 20px;
+  background: var(--bg-tint);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--primary);
+}
+
+.insight-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.insight-text {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.insight-disclaimer {
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: rgba(255, 200, 0, 0.1);
+  border-radius: var(--radius);
+  border-left: 3px solid #ffc800;
+}
+
+/* History list */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: var(--bg-tint);
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+.history-item:hover {
+  background: var(--card);
+  box-shadow: var(--shadow-soft);
+}
+
+.history-item__main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-item__scores {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.score-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.score-badge--stress { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; }
+.score-badge--depression { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.score-badge--anxiety { background: rgba(0, 212, 170, 0.15); color: #00d4aa; }
+.score-badge--sleep { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+
+.history-item__prediction {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.history-item__meta {
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stat-value {
+    font-size: 22px;
+  }
+  
+  .history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .history-item__meta {
+    text-align: left;
+  }
+}
+
+/* Debug Panel Styles */
+.debug-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 450px;
+  max-height: 80vh;
+  background: #1a1a2e;
+  border: 1px solid #2d2d44;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  overflow: hidden;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.debug-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #0f0f1a;
+  border-bottom: 1px solid #2d2d44;
+}
+
+.debug-panel__header h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #00d4aa;
+}
+
+.debug-close {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.debug-panel__content {
+  max-height: calc(80vh - 50px);
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.debug-section {
+  margin-bottom: 16px;
+}
+
+.debug-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+  color: #8b5cf6;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.debug-section pre {
+  margin: 0;
+  padding: 12px;
+  background: #0f0f1a;
+  border-radius: 6px;
+  color: #00d4aa;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 11px;
+  margin-top: 8px;
+}
+</style>
+{% endblock %}

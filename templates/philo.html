@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-4oI2rdHfFNez8l8O5lDwC5aLDBtnEsRgG1m3d8U5b50qVD75UIt440f+lYR/RA80fPFMCTJGp+bd9SmK/E7CQA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon link -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #3d87c7; /* Blue Background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh; /* Ensure full viewport height */
+    }
+    /* Pseudo-element for background image */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url("{{ url_for('static', filename='images/Philosophy.png') }}"); /* Background image URL */
+      background-size: cover;
+      background-position: center;
+      filter: blur(10px); /* Apply blur effect */
+      z-index: -1; /* Place behind other content */
+    }
+
+    /* Blue tint overlay */
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background-color: rgba(69, 190, 254, 0.5); /* Semi-transparent blue color */
+      z-index: -1; /* Place behind other content */
+    }
+
+    .menu-button {
+      position: fixed;
+      top: 15px;
+      left: 20px;
+      cursor: pointer;
+      color: #3D4756; /* Deep Blue Color */
+      font-size: 24px;
+      z-index: 1; /* Ensure the button is above the taskbar */
+    }
+
+    .taskbar {
+      position: fixed;
+      top: 0;
+      left: -200px; /* Initial position outside the viewport */
+      width: 200px;
+      height: 100%;
+      background-color: #F6F4F4; /* White Background */
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+      transition: left 0.3s ease-in-out;
+      z-index: 1; /* Ensure the taskbar is behind the button */
+      overflow: hidden; /* Hide potential scrollbar */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lines {
+      display: block;
+      margin: 8px 0;
+    }
+
+    .line {
+      height: 3px;
+      width: 30px;
+      background-color: #3D4756; /* Deep Blue Color */
+      margin: 5px 0;
+    }
+
+    .philosophies-box {
+      display: grid;
+      justify-content: center;
+      grid-template-columns: auto;
+      background-color: #3d85cb; /* Blue Box Background */
+      border: 5px solid #dddddd; /* Light Gray Border */
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      width: 80%;
+      max-width: 800px;
+      text-align: center;
+    }
+
+    .philosophy-box {
+      background-color: #F6F4F4; /* White Box Background */
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .philosophies-box > h2{
+      color: white;
+    }
+
+    #phil-box1 {
+      border: 5px solid tan; /* Tan Border */
+    }
+
+    #phil-box2 {
+      border: 5px solid darkred; /* Dark Red Border */
+    }
+
+    .philosophy-box:hover {
+      transform: scale(1.05); /* Scale up on hover */
+    }
+
+    .philosophy-title {
+      color: #333333; /* Dark Text Color */
+      font-size: 20px; /* Larger Font Size */
+      margin-bottom: 10px;
+    }
+
+    .philosophy-description {
+      color: #555555; /* Medium Gray Text Color */
+      font-size: 16px; /* Medium Font Size */
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent Black Overlay */
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 3; /* Ensure modal is above other content */
+    }
+
+    .modal-content {
+      background-color: #F6F4F4; /* White Modal Background */
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 80%;
+      max-height: 80%;
+      overflow-y: auto; /* Enable scrolling if content exceeds modal height */
+    }
+
+    .modal-close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: transparent;
+      border: none;
+      color: #333333; /* Dark Text Color */
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .img {
+        width: 20%;
+        height: 40%;
+        background-size: contain;
+        max-width: 100%;
+        max-height: 100%;
+    }
+  </style>
+  <title>Philosophies for Life</title>
+</head>
+<body>
+<!-- Menu Button -->
+<div class="menu-button" onclick="toggleTaskbar()">
+    <div class="lines">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
+  </div>
+  <div class="taskbar2">
+    <div class="nav-buttons">
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        home
+      </span>
+      <button onclick="leave3()">Home</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        group
+      </span>
+      <button onclick="leave13()">Socialization</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        sentiment_neutral
+      </span>
+      <button onclick="leave4()">Survey</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        directions_run
+      </span>
+      <button onclick="leave5()">Exercise</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        calendar_month
+      </span>
+      <button onclick="leave12()">Calendar</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        menu_book
+      </span>
+      <button onclick="leave2()">Philosophies</button>
+      <span class="material-symbols-outlined" style="font-size:40px; color:white">
+        local_hospital
+      </span>
+      <button onclick="leave20()">Additional aid</button>
+    </div>
+    <img class="logo" src="{{ url_for('static', filename='images/WallsLogo2.PNG') }}" alt="Walls Logo">
+  </div>
+  <style>
+      .taskbar {
+        position: fixed;
+        top: 0;
+        left: -200px; /* Initial position outside the viewport */
+        width: 200px;
+        height: 100%;
+        background-color: #F6F4F4; /* White Background */
+        box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s ease-in-out;
+        z-index: 1; /* Ensure the taskbar is behind the button */
+        overflow: hidden; /* Hide potential scrollbar */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+  
+    .taskbar2 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background-color: #3D85C6; /* Blue Background */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+  
+      .taskbar2 .nav-buttons button {
+        background-color: transparent;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+  
+      .taskbar2 .nav-buttons span {
+        margin-left: 40px;
+      }
+  
+      .taskbar2 .nav-buttons button:hover {
+        
+        text-decoration: underline;
+      }
+  
+      .taskbar2 .nav-buttons button:last-child {
+        margin-right: 0;
+      }
+  
+      .logo {
+              width: 200px;
+              height: 50px;
+              margin-right: 20px;
+          }
+  
+      .taskbar2::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background-color: #787987; /* Gray line at the bottom */
+      }
+      headers {
+        font-size:30px;
+        color: #293553;
+      }
+  
+  </style>
+  
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <span class="material-symbols-outlined" style="font-size:50px">
+      home
+    </span>
+    <button class="button2" onclick="leave3()">Home</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      sentiment_neutral
+    </span>
+    <button class="button2" onclick="leave4()">Survey</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      directions_run
+    </span>
+    <button class="button2" onclick="leave5()">Exercise</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      calendar_month
+    </span>
+    <button class="button2" onclick="leave12()">Calendar</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      menu_book
+    </span>
+    <button class="button2" onclick="leave2()">Philosophies</button>
+    <span class="material-symbols-outlined" style="font-size:50px">
+      local_hospital
+    </span>
+    <button class="button2" onclick="leave20()">Additional aid</button>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+      function leave2() {
+          window.location.href = "{{ url_for('legacy.philo') }}"
+      }
+      function leave5() {
+          window.location.href = "{{ url_for('legacy.exercise') }}"
+      }
+      function leave3() {
+          window.location.href = "{{ url_for('legacy.thome') }}"
+      }
+      function leave20() {
+          window.location.href = "{{ url_for('legacy.aid') }}"
+      }
+      function leave4() {
+          window.location.href = "{{ url_for('legacy.survey') }}"
+      }
+      function leave12() {
+          window.location.href = "{{ url_for('legacy.calendar') }}"
+      }
+      function leave13() {
+          window.location.href = "{{ url_for('legacy.social') }}"
+      }
+    </script>
+  </div>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,1,0" />
+  
+
+  <!-- Philosophy Box -->
+  <div class="philosophies-box">
+    <h2>Philosophies</h2>
+    <!-- Philosophy Boxes -->
+    <div class="philosophy-box" onclick="openModal(1)" id="phil-box1">
+      <h3 class="philosophy-title">Minimalism</h3>
+      <img src="{{ url_for('static', filename='images/Minimalism.png') }}" class = "img" alt="Minimalism Image" width="100%">
+      <p class="philosophy-description">
+        Minimalism is a lifestyle that helps people question what things add value to their lives.
+      </p>
+    </div>
+
+    <!-- Add more philosophy boxes here -->
+
+    <!-- Stoicism -->
+    <div class="philosophy-box" onclick="openModal(2)" id="phil-box2">
+      <h3 class="philosophy-title">Stoicism</h3>
+      <img src="{{ url_for('static', filename='images/Stoicism.png') }}" class = "img" alt="Stoicism Image" width="100%">
+      <p class="philosophy-description">
+        Stoicism is a school of Hellenistic philosophy founded by Zeno of Citium in Athens in the early 3rd century BC. It teaches the development of self-control and fortitude as a means of overcoming destructive emotions.
+      </p>
+    </div>
+  </div>
+
+  <!-- Modal Overlay -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal-content">
+      <button class="modal-close-button" onclick="closeModal()">&times;</button>
+      <!-- Philosophy Content -->
+      <h3 class="philosophy-title">Minimalism</h3>
+      <img src="{{ url_for('static', filename='images/Minimalism.png') }}" class = "img" alt="Minimalism Image" width="100%">
+      <p class="philosophy-description">
+        Minimalism is a lifestyle that helps people question what things add value to their lives. It is a philosophy that advocates for living with fewer possessions, reducing clutter, and focusing on what truly matters.
+      </p>
+    </div>
+
+    <!-- Stoicism Modal Content -->
+    <div class="modal-content" id="stoicismModal">
+      <button class="modal-close-button" onclick="closeModal()">&times;</button>
+      <h3 class="philosophy-title">Stoicism</h3>
+      <img src="{{ url_for('static', filename='images/Stoicism.png') }}" class = "img" alt="Stoicism Image" width="100%">
+      <p class="philosophy-description">
+        Stoicism is a school of Hellenistic philosophy founded by Zeno of Citium in Athens in the early 3rd century BC. It teaches the development of self-control and fortitude as a means of overcoming destructive emotions. It emphasizes the importance of virtue, reason, and living in harmony with nature.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    function toggleTaskbar() {
+      const taskbar = document.querySelector('.taskbar');
+      const newLeft = taskbar.style.left === '0px' ? '-200px' : '0px';
+      taskbar.style.left = newLeft;
+    }
+
+    function openModal(id) {
+      const modalOverlay = document.getElementById('modalOverlay');
+      modalOverlay.style.display = 'flex';
+
+      // Depending on the ID, show the corresponding modal content
+      if (id === 1) {
+        document.getElementById('minimalismModal').style.display = 'block';
+      } else if (id === 2) {
+        document.getElementById('stoicismModal').style.display = 'block';
+      }
+    }
+
+    function closeModal(event) {
+      const modalOverlay = document.getElementById('modalOverlay');
+      modalOverlay.style.display = 'none';
+
+      // Close the modal content if clicked outside the modal
+      if (event.target === modalOverlay) {
+        const modalContents = document.querySelectorAll('.modal-content');
+        modalContents.forEach(content => {
+          content.style.display = 'none';
+        });
+      }
+    }
+  </script>
+
+</body>
+</html>
+

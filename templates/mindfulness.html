@@ -1,0 +1,654 @@
+{% extends "base.html" %}
+{% block title %}Mindfulness Resources | WALLS{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/kernel.css') }}">
+{% endblock %}
+
+{% block header_actions %}
+<a class="btn btn-ghost" href="{{ url_for('frontend.notes') }}">Notes</a>
+<a class="btn btn-ghost" href="{{ url_for('frontend.dashboard') }}">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<section class="hero fade-in">
+    <h1 data-animate="chars">Mindfulness & Resources</h1>
+    <p class="fade-body">Curated tools and resources to support your mental wellness journey.</p>
+</section>
+
+<div class="mindfulness-container">
+    <!-- Crisis Banner -->
+    <div class="crisis-banner" id="crisis-banner">
+        <div class="crisis-icon">🆘</div>
+        <div class="crisis-content">
+            <strong>Need immediate help?</strong>
+            <span>If you're in crisis, please reach out:</span>
+        </div>
+        <div class="crisis-actions">
+            <a href="tel:988" class="crisis-btn">📞 Call 988</a>
+            <a href="sms:741741?body=HOME" class="crisis-btn">💬 Text HOME to 741741</a>
+        </div>
+    </div>
+
+    <!-- Breathing Exercise Section -->
+    <section class="breathing-section">
+        <div class="soft-card">
+            <h2 class="section-title">🫁 Breathing Exercises</h2>
+            <p class="section-desc">Simple techniques to calm your nervous system.</p>
+            
+            <div class="breathing-exercises" id="breathing-exercises">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Breathing Animation Modal -->
+    <div class="breathing-modal" id="breathing-modal" hidden>
+        <div class="breathing-modal-backdrop" id="breathing-backdrop"></div>
+        <div class="breathing-modal-content">
+            <button class="breathing-close" id="breathing-close">&times;</button>
+            <h2 id="breathing-title">Box Breathing</h2>
+            <p id="breathing-desc">Follow the circle and breathe.</p>
+            
+            <div class="breathing-animation">
+                <div class="breathing-circle" id="breathing-circle">
+                    <span class="breathing-instruction" id="breathing-instruction">Ready</span>
+                </div>
+                <div class="breathing-progress">
+                    <span id="breathing-cycle">0</span> / <span id="breathing-total">4</span> cycles
+                </div>
+            </div>
+            
+            <div class="breathing-controls">
+                <button class="btn btn-primary" id="breathing-start">Begin</button>
+                <button class="btn btn-ghost" id="breathing-stop" hidden>Stop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Tips -->
+    <section class="tips-section">
+        <div class="soft-card">
+            <h2 class="section-title">💡 Quick Tips</h2>
+            <p class="section-desc">Evidence-based techniques you can use right now.</p>
+            
+            <div class="tips-tabs">
+                <button class="tip-tab active" data-category="anxiety">Anxiety</button>
+                <button class="tip-tab" data-category="depression">Depression</button>
+                <button class="tip-tab" data-category="stress">Stress</button>
+                <button class="tip-tab" data-category="sleep">Sleep</button>
+            </div>
+            
+            <div class="tips-grid" id="tips-grid">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Find a Therapist -->
+    <section class="therapist-section">
+        <div class="soft-card">
+            <h2 class="section-title">🔍 Find a Therapist</h2>
+            <p class="section-desc">Resources to connect with mental health professionals.</p>
+            
+            <div class="therapist-search">
+                <input type="text" 
+                       id="therapist-location" 
+                       class="search-input" 
+                       placeholder="Your city or 'near me'">
+                <select id="therapist-specialty" class="search-select">
+                    <option value="">Any specialty</option>
+                    <option value="anxiety">Anxiety</option>
+                    <option value="depression">Depression</option>
+                    <option value="trauma">Trauma/PTSD</option>
+                    <option value="relationships">Relationships</option>
+                    <option value="grief">Grief</option>
+                </select>
+                <button class="btn btn-primary" id="therapist-search-btn">Search</button>
+            </div>
+            
+            <div class="therapist-results" id="therapist-results">
+                <p class="privacy-note">
+                    🔒 Your search opens in a new tab. WALLS does not track your searches.
+                </p>
+                <div class="directory-grid" id="directory-grid">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Curated Resources -->
+    <section class="resources-section">
+        <div class="soft-card">
+            <h2 class="section-title">📚 Curated Resources</h2>
+            <p class="section-desc">Free, high-quality mental health resources.</p>
+            
+            <div class="resource-tabs">
+                <button class="resource-tab active" data-category="meditation_apps">Meditation Apps</button>
+                <button class="resource-tab" data-category="youtube_channels">YouTube</button>
+                <button class="resource-tab" data-category="educational">Education</button>
+            </div>
+            
+            <div class="resources-grid" id="resources-grid">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Learn Section -->
+    <section class="learn-section">
+        <div class="soft-card">
+            <h2 class="section-title">🧠 Learn About Mental Health</h2>
+            <p class="section-desc">Understand the science behind your experiences.</p>
+            
+            <div class="learn-grid" id="learn-grid">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer-box">
+        <p>
+            <strong>Important:</strong> These resources are for informational purposes only and do not constitute 
+            medical advice. Always consult a qualified healthcare professional for diagnosis and treatment.
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mindfulness.js') }}"></script>
+
+<style>
+/* Mindfulness Page Styles */
+.mindfulness-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+}
+
+/* Crisis Banner */
+.crisis-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 107, 107, 0.05));
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 12px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.crisis-icon {
+    font-size: 28px;
+}
+
+.crisis-content {
+    flex: 1;
+    min-width: 200px;
+}
+
+.crisis-content strong {
+    display: block;
+    color: #ff6b6b;
+}
+
+.crisis-content span {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.crisis-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.crisis-btn {
+    padding: 10px 16px;
+    background: #ff6b6b;
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.crisis-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* Section Styles */
+section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+}
+
+.section-desc {
+    color: var(--muted);
+    margin-bottom: 24px;
+}
+
+/* Breathing Exercises */
+.breathing-exercises {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.breathing-card {
+    padding: 20px;
+    background: var(--bg-tint);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+}
+
+.breathing-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+}
+
+.breathing-card-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+.breathing-card-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+.breathing-card-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.benefit-tag {
+    padding: 4px 8px;
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--primary);
+    border-radius: 6px;
+    font-size: 11px;
+}
+
+/* Breathing Modal */
+.breathing-modal {
+    position: fixed;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    display: none;
+}
+
+.breathing-modal:not([hidden]) {
+    display: flex;
+}
+
+.breathing-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    cursor: pointer;
+}
+
+.breathing-modal-content {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    position: relative;
+}
+
+.breathing-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--bg-tint);
+    border: none;
+    font-size: 28px;
+    color: var(--text);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.breathing-close:hover {
+    background: var(--primary);
+    color: white;
+    transform: scale(1.1);
+}
+
+.breathing-animation {
+    margin: 40px 0;
+}
+
+.breathing-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), #00d4aa);
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 4s ease-in-out;
+    box-shadow: 0 0 60px rgba(139, 92, 246, 0.3);
+}
+
+.breathing-circle.inhale {
+    transform: scale(1.3);
+}
+
+.breathing-circle.exhale {
+    transform: scale(0.8);
+}
+
+.breathing-circle.hold {
+    transform: scale(1.3);
+}
+
+.breathing-instruction {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.breathing-progress {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.breathing-controls {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+/* Tips Section */
+.tips-tabs, .resource-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tip-tab, .resource-tab {
+    padding: 10px 20px;
+    border: 1px solid var(--bg-tint);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tip-tab:hover, .resource-tab:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.tip-tab.active, .resource-tab.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.tip-card {
+    padding: 20px;
+    background: var(--bg-tint);
+    border-radius: 12px;
+    border-left: 3px solid var(--primary);
+}
+
+.tip-card-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+.tip-card-content {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* Therapist Search */
+.therapist-search {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.therapist-search .search-input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-select {
+    padding: 12px 16px;
+    border: 1px solid var(--bg-tint);
+    border-radius: 8px;
+    background: var(--bg-tint);
+    color: var(--text);
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.privacy-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+}
+
+.directory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.directory-card {
+    padding: 16px;
+    background: var(--bg-tint);
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.directory-card:hover {
+    transform: translateY(-2px);
+}
+
+.directory-card a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.directory-card a:hover {
+    text-decoration: underline;
+}
+
+.directory-card p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+}
+
+/* Resources Grid */
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.resource-card {
+    padding: 20px;
+    background: var(--bg-tint);
+    border-radius: 12px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.resource-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.resource-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.resource-icon {
+    font-size: 24px;
+}
+
+.resource-card-title {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.resource-card-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.resource-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.resource-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.resource-link:hover {
+    text-decoration: underline;
+}
+
+/* Learn Grid */
+.learn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.learn-card {
+    padding: 24px;
+    background: var(--bg-tint);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.learn-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+}
+
+.learn-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+
+.learn-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+.learn-summary {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+/* Disclaimer */
+.disclaimer-box {
+    padding: 20px;
+    background: rgba(251, 191, 36, 0.1);
+    border-left: 3px solid #fbbf24;
+    border-radius: 8px;
+    margin-top: 40px;
+}
+
+.disclaimer-box p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+}
+
+.disclaimer-box strong {
+    color: #fbbf24;
+}
+
+@media (max-width: 640px) {
+    .crisis-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .crisis-actions {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .therapist-search {
+        flex-direction: column;
+    }
+    
+    .therapist-search .search-input,
+    .search-select {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+

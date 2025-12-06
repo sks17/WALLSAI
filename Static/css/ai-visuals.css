@@ -1,0 +1,592 @@
+/* ============================================================================
+   AI VISUALIZATION LAYER — Dark Neon Tech Aesthetic
+   ============================================================================
+   This stylesheet creates the "geeky, futuristic, complex" visual layer
+   for AI visualizations. Contrasts with the calm mental health UI.
+   ============================================================================ */
+
+/* --------------------------------------------------------------------------
+   CSS Variables for AI Theme
+   -------------------------------------------------------------------------- */
+:root {
+  /* Neon accent colors */
+  --ai-cyan: #00f5ff;
+  --ai-magenta: #ff00ff;
+  --ai-purple: #8b5cf6;
+  --ai-green: #00ff88;
+  --ai-orange: #ff6b00;
+  --ai-pink: #ff0080;
+  
+  /* Backgrounds */
+  --ai-bg-dark: #0a0a0f;
+  --ai-bg-card: #12121a;
+  --ai-bg-surface: #1a1a25;
+  --ai-bg-elevated: #222230;
+  
+  /* Text */
+  --ai-text-primary: #e0e0e0;
+  --ai-text-secondary: #888899;
+  --ai-text-muted: #555566;
+  
+  /* Borders & Glows */
+  --ai-border: #333345;
+  --ai-glow-cyan: 0 0 20px rgba(0, 245, 255, 0.4);
+  --ai-glow-magenta: 0 0 20px rgba(255, 0, 255, 0.4);
+  --ai-glow-purple: 0 0 20px rgba(139, 92, 246, 0.4);
+  
+  /* Transitions */
+  --ai-transition-fast: 150ms ease;
+  --ai-transition-medium: 300ms ease;
+  --ai-transition-slow: 600ms ease;
+}
+
+/* --------------------------------------------------------------------------
+   AI Section Container
+   -------------------------------------------------------------------------- */
+.ai-zone {
+  background: linear-gradient(135deg, var(--ai-bg-dark) 0%, var(--ai-bg-card) 100%);
+  border-radius: 24px;
+  padding: 32px;
+  margin: 24px 0;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--ai-border);
+}
+
+.ai-zone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    var(--ai-cyan) 20%,
+    var(--ai-magenta) 50%,
+    var(--ai-purple) 80%,
+    transparent 100%
+  );
+  animation: scanline 3s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateX(-100%); opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0.5; }
+}
+
+.ai-zone__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ai-border);
+}
+
+.ai-zone__title {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ai-cyan);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-zone__title::before {
+  content: '◆';
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; text-shadow: none; }
+  50% { opacity: 1; text-shadow: var(--ai-glow-cyan); }
+}
+
+.ai-zone__status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ai-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-zone__status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ai-green);
+  animation: status-blink 1.5s ease-in-out infinite;
+}
+
+@keyframes status-blink {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--ai-green); }
+  50% { opacity: 0.5; box-shadow: none; }
+}
+
+/* --------------------------------------------------------------------------
+   AI Visualization Cards
+   -------------------------------------------------------------------------- */
+.ai-card {
+  background: var(--ai-bg-surface);
+  border: 1px solid var(--ai-border);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--ai-transition-medium);
+}
+
+.ai-card:hover {
+  border-color: var(--ai-cyan);
+  box-shadow: var(--ai-glow-cyan);
+}
+
+.ai-card--magenta:hover {
+  border-color: var(--ai-magenta);
+  box-shadow: var(--ai-glow-magenta);
+}
+
+.ai-card--purple:hover {
+  border-color: var(--ai-purple);
+  box-shadow: var(--ai-glow-purple);
+}
+
+.ai-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.ai-card__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ai-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.ai-card__value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ai-text-primary);
+  line-height: 1;
+}
+
+.ai-card__value--cyan { color: var(--ai-cyan); }
+.ai-card__value--magenta { color: var(--ai-magenta); }
+.ai-card__value--purple { color: var(--ai-purple); }
+.ai-card__value--green { color: var(--ai-green); }
+
+.ai-card__caption {
+  font-size: 12px;
+  color: var(--ai-text-muted);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.ai-card__toggle {
+  background: transparent;
+  border: 1px solid var(--ai-border);
+  color: var(--ai-text-secondary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  transition: var(--ai-transition-fast);
+}
+
+.ai-card__toggle:hover {
+  border-color: var(--ai-cyan);
+  color: var(--ai-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Grid Layouts for Visualizations
+   -------------------------------------------------------------------------- */
+.ai-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.ai-grid--2x2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.ai-grid--3col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.ai-grid--main {
+  grid-template-columns: 2fr 1fr;
+}
+
+@media (max-width: 1024px) {
+  .ai-grid--2x2,
+  .ai-grid--3col,
+  .ai-grid--main {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3D Canvas Containers
+   -------------------------------------------------------------------------- */
+.ai-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: var(--ai-bg-dark);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ai-canvas-container--large {
+  height: 400px;
+}
+
+.ai-canvas-container--hero {
+  height: 500px;
+}
+
+.ai-canvas-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ai-canvas-overlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--ai-text-secondary);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.ai-canvas-overlay__metric {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.ai-canvas-overlay__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* --------------------------------------------------------------------------
+   Chart Containers
+   -------------------------------------------------------------------------- */
+.ai-chart-container {
+  position: relative;
+  width: 100%;
+  height: 250px;
+}
+
+.ai-chart-container--small {
+  height: 180px;
+}
+
+.ai-chart-container--large {
+  height: 350px;
+}
+
+/* --------------------------------------------------------------------------
+   Score Meters
+   -------------------------------------------------------------------------- */
+.ai-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-meter__label {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.ai-meter__name {
+  color: var(--ai-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ai-meter__value {
+  color: var(--ai-text-primary);
+  font-weight: 600;
+}
+
+.ai-meter__bar {
+  height: 8px;
+  background: var(--ai-bg-dark);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ai-meter__fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 600ms ease;
+  position: relative;
+}
+
+.ai-meter__fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2));
+  animation: meter-shimmer 2s ease-in-out infinite;
+}
+
+@keyframes meter-shimmer {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.ai-meter__fill--stress { background: linear-gradient(90deg, #ff6b6b, #ff0080); }
+.ai-meter__fill--depression { background: linear-gradient(90deg, #8b5cf6, #a855f7); }
+.ai-meter__fill--anxiety { background: linear-gradient(90deg, #00f5ff, #00d4aa); }
+.ai-meter__fill--sleep { background: linear-gradient(90deg, #3b82f6, #06b6d4); }
+
+/* --------------------------------------------------------------------------
+   Animated Background Effects
+   -------------------------------------------------------------------------- */
+.ai-bg-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  animation: grid-move 20s linear infinite;
+}
+
+@keyframes grid-move {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(40px, 40px); }
+}
+
+.ai-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ai-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--ai-cyan);
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: particle-float 10s ease-in-out infinite;
+}
+
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  25% { transform: translateY(-50px) translateX(20px); opacity: 0.6; }
+  50% { transform: translateY(-100px) translateX(-10px); opacity: 0.3; }
+  75% { transform: translateY(-50px) translateX(-30px); opacity: 0.6; }
+}
+
+/* --------------------------------------------------------------------------
+   Loading States
+   -------------------------------------------------------------------------- */
+.ai-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+}
+
+.ai-loading__spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--ai-border);
+  border-top-color: var(--ai-cyan);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ai-loading__text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ai-text-secondary);
+  animation: loading-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* --------------------------------------------------------------------------
+   Data Tables (for history/metrics)
+   -------------------------------------------------------------------------- */
+.ai-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.ai-table th,
+.ai-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--ai-border);
+}
+
+.ai-table th {
+  color: var(--ai-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.ai-table td {
+  color: var(--ai-text-primary);
+}
+
+.ai-table tr:hover td {
+  background: var(--ai-bg-elevated);
+}
+
+/* --------------------------------------------------------------------------
+   Tooltips & Info Popups
+   -------------------------------------------------------------------------- */
+.ai-tooltip {
+  position: relative;
+  cursor: help;
+}
+
+.ai-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: var(--ai-bg-elevated);
+  border: 1px solid var(--ai-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--ai-text-primary);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--ai-transition-fast);
+  z-index: 100;
+}
+
+.ai-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --------------------------------------------------------------------------
+   Anomaly Indicators
+   -------------------------------------------------------------------------- */
+.ai-anomaly {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #ff6b6b;
+}
+
+.ai-anomaly--warning {
+  background: rgba(255, 200, 0, 0.1);
+  border-color: rgba(255, 200, 0, 0.3);
+  color: #ffc800;
+}
+
+.ai-anomaly--info {
+  background: rgba(0, 245, 255, 0.1);
+  border-color: rgba(0, 245, 255, 0.3);
+  color: var(--ai-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   Section Dividers
+   -------------------------------------------------------------------------- */
+.ai-divider {
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    var(--ai-border) 20%,
+    var(--ai-cyan) 50%,
+    var(--ai-border) 80%,
+    transparent 100%
+  );
+  margin: 24px 0;
+  opacity: 0.5;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Adjustments
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .ai-zone {
+    padding: 20px;
+    border-radius: 16px;
+  }
+  
+  .ai-card {
+    padding: 16px;
+  }
+  
+  .ai-canvas-container {
+    height: 220px;
+  }
+  
+  .ai-canvas-container--large {
+    height: 280px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Font Import (JetBrains Mono for tech aesthetic)
+   -------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+

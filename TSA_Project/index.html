@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-4oI2rdHfFNez8l8O5lDwC5aLDBtnEsRgG1m3d8U5b50qVD75UIt440f+lYR/RA80fPFMCTJGp+bd9SmK/E7CQA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon link -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #3D85C6; /* Light Cyan Background */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden; /* Prevent scrolling when the taskbar is open */
+    }
+
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      cursor: pointer;
+      color: #3D4756; /* Deep Blue Color */
+      font-size: 24px;
+      z-index: 2; /* Ensure the button is above the taskbar */
+    }
+
+    .taskbar {
+      position: fixed;
+      top: 0;
+      left: -200px; /* Initial position outside the viewport */
+      width: 200px;
+      height: 100%;
+      background-color: #ffffff; /* White Background */
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+      transition: left 0.3s ease-in-out;
+      z-index: 1; /* Ensure the taskbar is behind the button */
+      overflow: hidden; /* Hide potential scrollbar */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lines {
+      display: block;
+      margin: 8px 0;
+    }
+
+    .line {
+      height: 3px;
+      width: 30px;
+      background-color: #3D4756; /* Deep Blue Color */
+      margin: 5px 0;
+    }
+
+    .login-container {
+      text-align: center;
+      max-width: 60%;
+      padding: 5%;
+      background-color: #ffffff; /* White Background */
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20%;
+      margin-top: 30%;
+    }
+
+    h1 {
+      color: #333333; /* Dark Text Color */
+    }
+
+    .logo {
+      width: 100%; /* Full width for responsiveness */
+      max-width: 300px; /* Adjust the max-width as needed */
+      margin-bottom: 20px; /* Increased margin to create more space */
+    }
+
+    .button {
+      background-color: #A1ACBD; /* Dark Cyan Button Color */
+      color: #ffffff; /* White Text Color */
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+      margin-bottom: 20px; /* Increased margin to create more space */
+      display: block; /* Buttons on top of each other */
+      width: 100%; /* Full width */
+    }
+
+    .button:hover {
+      background-color: #3D4756; /* Slightly Darker Cyan on Hover */
+    }
+
+    .banner {
+      background-color: #000000; /* Black Background for the Banner */
+      color: #ffffff; /* White Text Color */
+      padding: 5%; /* Adjusted to be a percentage of the container width */
+      text-align: center;
+      width: 100%;
+    }
+  </style>
+  <title>Walls Login</title>
+</head>
+<body>
+
+  <!-- Menu Button -->
+  <div class="menu-button" onclick="toggleTaskbar()">
+    <div class="lines">
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+    </div>
+  </div>
+
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <!-- You can add buttons or content to the taskbar here -->
+  </div>
+
+  <div class="login-container">
+    <!-- Replace "Walls" with the logo image -->
+    <img class="logo" alt="Walls Logo" src="{{ url_for('static', filename='images/WallsLogo.PNG') }}">
+
+    <!-- Add your login form fields here if needed -->
+
+    <!-- Login Button -->
+    <button class="button" onclick="window.location.href='login.html'">Login</button>
+
+    <!-- Get Started Button -->
+    <button class="button" onclick="window.location.href='signup.html'">Get Started</button>
+  </div>
+
+  <!-- Black Banner with "Lorem Ipsum" Text -->
+  <div class="banner">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eget elit sit amet libero bibendum eleifend.</p>
+  </div>
+
+  <script>
+    function toggleTaskbar() {
+      const taskbar = document.querySelector('.taskbar');
+      const newLeft = taskbar.style.left === '0px' ? '-200px' : '0px';
+      taskbar.style.left = newLeft;
+    }
+  </script>
+
+</body>
+</html>
